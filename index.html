@@ -539,6 +539,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 
 <!-- ══ AUTH SCREEN ══ -->
 <div id="authScreen" class="auth-screen">
+  <button onclick="showWelcome()" style="align-self:flex-start;background:none;border:none;cursor:pointer;color:#6F7A71;font-size:14px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:4px;padding:0;margin-bottom:24px">
+    <span style="font-family:'Material Symbols Outlined';font-size:18px;vertical-align:middle">chevron_left</span> Volver
+  </button>
   <div class="auth-logo" style="display:flex;align-items:center;gap:10px"><svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <rect x="10" y="33" width="78" height="54" rx="11" fill="#6BBF8E" stroke="#2B3A4A" stroke-width="3"/>
   <rect x="10" y="33" width="78" height="16" rx="11" fill="#7FCFA2" stroke="#2B3A4A" stroke-width="3"/>
@@ -1518,8 +1521,17 @@ async function initApp(){
 
 async function loadPerfil(){
   const { data, error } = await sb.from('perfiles').select('*').eq('id', user.id).single();
-  if(error || !data){ await doLogout(); return; }
-  perfil = data;
+  if(error || !data){
+    // Try to create perfil if it doesn't exist (in case DB trigger is missing)
+    const nombre = user.user_metadata?.nombre || user.email?.split('@')[0] || 'Usuario';
+    const { data: created, error: ce } = await sb.from('perfiles')
+      .insert({ id: user.id, nombre, cotizacion_usd: 1350 })
+      .select().single();
+    if(ce || !created){ await doLogout(); return; }
+    perfil = created;
+  } else {
+    perfil = data;
+  }
   cotiz = perfil.cotizacion_usd || 1350;
   hogarId = perfil.hogar_id;
   startApp();
@@ -1961,6 +1973,16 @@ function goTab(id){
     t.classList.toggle('active',ids[i]===id);
   });
   currentTab = id;
+  // Reset presupuesto to tracking mode when leaving
+  if(id !== 's-presupuesto' && presMode === 'edicion'){
+    presMode = 'tracking';
+    const btn = document.getElementById('presModeBtn');
+    if(btn){ btn.innerHTML='<span class="ms ms-sm">edit</span> Editar'; btn.style.background='#F1F3F4'; btn.style.color='#191C1D'; btn.style.border='1px solid #E1E3E4'; }
+    const t = document.getElementById('presVistaTracking');
+    const e = document.getElementById('presVistaEdicion');
+    if(t) t.style.display='block';
+    if(e) e.style.display='none';
+  }
   renderTab(id);
 }
 function chMon(d){
@@ -2108,7 +2130,7 @@ async function saveTx(){
     es_hogar: esCompartido, caja_id: cajaId
   });
   btn.disabled=false; btn.textContent='Guardar';
-  if(error){ toast('Error al guardar'); return; }
+  if(error){ toast('Error al guardar. Verificá tu conexión.'); console.error(error); return; }
 
   // Si es compartido, también lo registra en hogar_gastos
   if(esCompartido && hogarId){
