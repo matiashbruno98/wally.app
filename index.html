@@ -2017,8 +2017,14 @@ function openSheet(id){
   }
   if(id==='hgSheet'){
     document.getElementById('hgdate').value = new Date().toISOString().split('T')[0];
-    popSel('hgcat', cats.filter(c=>c.tipo==='both'||c.tipo==='expense')); // no emoji in selects
-    document.getElementById('hgdesc').value=''; document.getElementById('hgamt').value='';
+    const expCats = cats.filter(c=>c.tipo==='both'||c.tipo==='expense');
+    if(!expCats.length){
+      toast('Primero creá categorías en Ajustes');
+      return;
+    }
+    popSel('hgcat', expCats);
+    document.getElementById('hgdesc').value='';
+    document.getElementById('hgamt').value='';
     document.getElementById('hgcvprev').style.display='none';
     quienPaga='yo'; updQUI();
   }
@@ -2168,7 +2174,16 @@ async function saveHg(){
   const cur=document.getElementById('hgcur').value;
   const catId=document.getElementById('hgcat').value;
   const date=document.getElementById('hgdate').value;
-  if(!desc||!amount||!date||!hogarId) return;
+  if(!desc||!amount||!date){
+    toast('Completá descripción, monto y fecha');
+    return;
+  }
+  // refresh hogarId from perfil if needed
+  if(!hogarId && perfil?.hogar_id) hogarId = perfil.hogar_id;
+  if(!hogarId){
+    toast('No tenés un hogar vinculado todavía');
+    return;
+  }
   const ars = cur==='USD' ? amount*cotiz : amount;
   const btn = document.getElementById('hgBtn');
   btn.disabled=true; btn.textContent='Guardando...';
@@ -2180,7 +2195,12 @@ async function saveHg(){
     cotizacion_usada: cotiz, categoria_id: catId || null, fecha: date
   }).select().single();
 
-  if(error){ toast('Error al guardar'); btn.disabled=false; btn.textContent='Guardar'; return; }
+  if(error){
+    console.error('saveHg error:', error);
+    toast('Error al guardar: ' + (error.message || 'verificá tu conexión'));
+    btn.disabled=false; btn.textContent='Guardar';
+    return;
+  }
 
   // si yo pagué → registrar egreso personal
   if(quienPaga==='yo'){
@@ -2213,7 +2233,8 @@ async function savePago(){
   if(!monto||!date||!hogarId) return;
   const btn=document.getElementById('pagoBtn');
   btn.disabled=true; btn.textContent='Guardando...';
-  await sb.from('hogar_pagos').insert({ hogar_id: hogarId, pagado_por: user.id, monto, nota, fecha: date });
+  const {error: pagoErr} = await sb.from('hogar_pagos').insert({ hogar_id: hogarId, pagado_por: user.id, monto, nota, fecha: date });
+  if(pagoErr){ toast('Error al registrar pago'); btn.disabled=false; btn.textContent='Registrar'; return; }
   // impacto en economía personal
   const catOtro = cats.find(c=>c.nombre==='Otro');
   if(pQuienPaga==='yo'){
@@ -2411,7 +2432,8 @@ async function saveHpres(){
   const catId=document.getElementById('hpcat').value;
   const rawAmt=parseFloat(document.getElementById('hpamt').value);
   const cur=document.getElementById('hpcur').value;
-  if(!rawAmt||!hogarId) return;
+  if(!rawAmt){ toast('Ingresá un monto'); return; }
+  if(!hogarId){ toast('No tenés hogar vinculado'); return; }
   const ars = cur==='USD' ? rawAmt*cotiz : rawAmt;
   const mes=curMonth+1, anio=curYear;
   await sb.from('presupuesto_hogar').upsert({ hogar_id:hogarId, categoria_id:catId, monto_ars:ars, mes, anio }, { onConflict:'hogar_id,categoria_id,mes,anio' });
@@ -2628,6 +2650,8 @@ function showGruposPanel(panel){
     } else {
       vinDiv.style.display='none'; conDiv.style.display='block';
       if(addBtn) addBtn.style.display='flex';
+      // ensure hogarId is fresh from perfil
+      if(!hogarId && perfil?.hogar_id) hogarId = perfil.hogar_id;
       renderHogarContent();
     }
   }
