@@ -855,7 +855,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div class="topbar">
         <div class="topbar-row">
           <div><h1>Presupuesto</h1></div>
-          <button onclick="openSheet('presSheet')" style="background:var(--green);color:#fff;border:none;border-radius:var(--rs);padding:8px 16px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer">＋ Agregar</button>
+          <button onclick="togglePresMode()" id="presModeBtn" style="background:#F1F3F4;border:1px solid #E1E3E4;color:#191C1D;border-radius:var(--rs);padding:7px 14px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px">
+            <span class="ms ms-sm">edit</span> Editar
+          </button>
         </div>
       </div>
       <div class="month-nav" style="margin-top:14px">
@@ -863,10 +865,32 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
         <span class="month-lbl" id="presMesLbl"></span>
         <button class="month-btn" onclick="chMon(1)">›</button>
       </div>
-      <div class="card" style="margin:0 16px;padding:0;overflow:hidden"><div id="presList"></div></div>
-      <div class="sect">
-        <div class="sect-title">Proyección de ahorro</div>
-        <div class="card" style="margin:0 16px"><div id="presAhorro"></div></div>
+
+      <!-- VISTA NORMAL (tracking) -->
+      <div id="presVistaTracking">
+        <div class="card" style="margin:0 16px;padding:0;overflow:hidden"><div id="presList"></div></div>
+        <div class="sect">
+          <div class="sect-title">Proyección de ahorro</div>
+          <div class="card" style="margin:0 16px"><div id="presAhorro"></div></div>
+        </div>
+      </div>
+
+      <!-- VISTA EDICIÓN (bulk entry) -->
+      <div id="presVistaEdicion" style="display:none">
+        <div style="padding:12px 16px 8px">
+          <p style="font-size:13px;color:#6F7A71;line-height:1.5">Ingresá el monto mensual para cada categoría. Dejá en blanco las que no querés presupuestar.</p>
+        </div>
+        <div class="card" style="margin:0 16px;padding:0;overflow:hidden" id="presEdicionList"></div>
+        <div style="padding:16px">
+          <button onclick="savePresBulk()" id="savePresBulkBtn" style="width:100%;background:#196C43;color:white;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(25,108,67,.25)">Guardar presupuesto</button>
+        </div>
+
+        <!-- Presupuesto Hogar -->
+        <div style="font-size:11px;color:#9AA5A0;text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:4px 16px 8px" id="presHogarSection">Presupuesto del hogar</div>
+        <div class="card" style="margin:0 16px;padding:0;overflow:hidden" id="presHogarEdicionList"></div>
+        <div style="padding:16px" id="presHogarSaveRow">
+          <button onclick="savePresHogarBulk()" style="width:100%;background:#0F5FAB;color:white;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(15,95,171,.2)">Guardar presupuesto del hogar</button>
+        </div>
       </div>
     </div>
 
@@ -1827,6 +1851,11 @@ function fHg(f,el){ hgFilter=f; document.querySelectorAll('#s-hogar .itab').forE
 
 // ── PRESUPUESTO ──
 function renderPresupuesto(){
+  // if in edit mode, re-render the bulk form with new month data
+  if(presMode === 'edicion'){
+    renderPresBulkEdicion();
+    return;
+  }
   const pres = presCache.filter(x => x.mes===curMonth+1 && x.anio===curYear);
   const txsMes = monTxs().filter(t=>t.tipo==='expense');
   const gastado = {};
@@ -1921,7 +1950,11 @@ function chMon(d){
   curMonth += d;
   if(curMonth<0){curMonth=11;curYear--}
   if(curMonth>11){curMonth=0;curYear++}
+  // reload fix pagos for new month
+  loadFixPagos().then(()=>{});
   renderAll();
+  // if in pres edit mode, refresh the bulk form
+  if(presMode === 'edicion') renderPresBulkEdicion();
 }
 
 // ══ SHEETS ══
@@ -2154,6 +2187,169 @@ async function savePago(){
   await Promise.all([loadHgPagos(), loadTxs()]);
   renderAll();
   toast('Pago registrado ✓');
+}
+
+// ══ PRESUPUESTO BULK MODE ══
+let presMode = 'tracking'; // 'tracking' | 'edicion'
+
+function togglePresMode(){
+  presMode = presMode === 'tracking' ? 'edicion' : 'tracking';
+  const btn = document.getElementById('presModeBtn');
+  const tracking = document.getElementById('presVistaTracking');
+  const edicion = document.getElementById('presVistaEdicion');
+
+  if(presMode === 'edicion'){
+    tracking.style.display = 'none';
+    edicion.style.display = 'block';
+    btn.innerHTML = '<span class="ms ms-sm">bar_chart</span> Ver tracking';
+    btn.style.background = '#196C43';
+    btn.style.color = 'white';
+    btn.style.border = 'none';
+    renderPresBulkEdicion();
+  } else {
+    tracking.style.display = 'block';
+    edicion.style.display = 'none';
+    btn.innerHTML = '<span class="ms ms-sm">edit</span> Editar';
+    btn.style.background = '#F1F3F4';
+    btn.style.color = '#191C1D';
+    btn.style.border = '1px solid #E1E3E4';
+    renderPresupuesto();
+  }
+}
+
+function renderPresBulkEdicion(){
+  // Personal budget bulk form
+  const expCats = cats.filter(c => c.tipo === 'expense' || c.tipo === 'both');
+  const existing = {};
+  presCache.filter(p => p.mes===curMonth+1 && p.anio===curYear)
+    .forEach(p => existing[p.categoria_id] = p.monto_ars);
+
+  document.getElementById('presEdicionList').innerHTML = expCats.map(c => {
+    const val = existing[c.id] ? Math.round(existing[c.id]).toLocaleString('es-AR') : '';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #E1E3E4">
+      <div style="width:36px;height:36px;border-radius:10px;background:${c.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">${c.emoji}</div>
+      <div style="flex:1;font-size:14px;font-weight:600;color:#191C1D">${c.nombre}</div>
+      <div style="display:flex;align-items:center;gap:4px;background:#F1F3F4;border:1px solid #E1E3E4;border-radius:10px;padding:8px 12px;min-width:120px">
+        <span style="font-size:14px;font-weight:700;color:#9AA5A0">$</span>
+        <input type="number" inputmode="decimal" id="pb-${c.id}"
+          value="${existing[c.id] ? Math.round(existing[c.id]) : ''}"
+          placeholder="0"
+          style="border:none;background:transparent;font-size:15px;font-weight:700;color:#191C1D;font-family:'Plus Jakarta Sans',sans-serif;width:80px;outline:none;text-align:right"
+          onfocus="this.select()">
+      </div>
+    </div>`;
+  }).join('');
+
+  // Hogar budget bulk form
+  const hogarSection = document.getElementById('presHogarSection');
+  const hogarList = document.getElementById('presHogarEdicionList');
+  const hogarSave = document.getElementById('presHogarSaveRow');
+
+  if(!hogarId || !perfil?.pareja_nombre){
+    hogarSection.style.display = 'none';
+    hogarList.style.display = 'none';
+    hogarSave.style.display = 'none';
+    return;
+  }
+
+  hogarSection.style.display = 'block';
+  hogarList.style.display = 'block';
+  hogarSave.style.display = 'block';
+
+  const existingH = {};
+  hpresCache.filter(p => p.mes===curMonth+1 && p.anio===curYear)
+    .forEach(p => existingH[p.categoria_id] = p.monto_ars);
+
+  hogarList.innerHTML = expCats.map(c => {
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #E1E3E4">
+      <div style="width:36px;height:36px;border-radius:10px;background:${c.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">${c.emoji}</div>
+      <div style="flex:1;font-size:14px;font-weight:600;color:#191C1D">${c.nombre}</div>
+      <div style="display:flex;align-items:center;gap:4px;background:#EBF3FF;border:1px solid #D4E3FF;border-radius:10px;padding:8px 12px;min-width:120px">
+        <span style="font-size:14px;font-weight:700;color:#9AA5A0">$</span>
+        <input type="number" inputmode="decimal" id="pbh-${c.id}"
+          value="${existingH[c.id] ? Math.round(existingH[c.id]) : ''}"
+          placeholder="0"
+          style="border:none;background:transparent;font-size:15px;font-weight:700;color:#191C1D;font-family:'Plus Jakarta Sans',sans-serif;width:80px;outline:none;text-align:right"
+          onfocus="this.select()">
+      </div>
+    </div>`;
+  }).join('');
+
+  // Add Enter → next field navigation
+  setTimeout(() => {
+    const allInputs = [...document.querySelectorAll('[id^="pb-"],[id^="pbh-"]')];
+    allInputs.forEach((inp, i) => {
+      inp.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === 'Tab'){
+          e.preventDefault();
+          const next = allInputs[i + 1];
+          if(next) next.focus();
+          else inp.blur();
+        }
+      });
+    });
+  }, 100);
+}
+
+async function savePresBulk(){
+  const btn = document.getElementById('savePresBulkBtn');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  const expCats = cats.filter(c => c.tipo === 'expense' || c.tipo === 'both');
+  const mes = curMonth + 1, anio = curYear;
+  const upserts = [];
+
+  expCats.forEach(c => {
+    const inp = document.getElementById('pb-' + c.id);
+    if(!inp) return;
+    const val = parseFloat(inp.value);
+    if(val > 0){
+      upserts.push({
+        user_id: user.id,
+        categoria_id: c.id,
+        monto_ars: val,
+        mes, anio
+      });
+    }
+  });
+
+  if(upserts.length){
+    await sb.from('presupuesto_personal')
+      .upsert(upserts, {onConflict:'user_id,categoria_id,mes,anio'});
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Guardar presupuesto';
+  await loadPres();
+  toast(`Presupuesto guardado para ${upserts.length} categoría${upserts.length!==1?'s':''} ✓`);
+}
+
+async function savePresHogarBulk(){
+  if(!hogarId) return;
+  const expCats = cats.filter(c => c.tipo === 'expense' || c.tipo === 'both');
+  const mes = curMonth + 1, anio = curYear;
+  const upserts = [];
+
+  expCats.forEach(c => {
+    const inp = document.getElementById('pbh-' + c.id);
+    if(!inp) return;
+    const val = parseFloat(inp.value);
+    if(val > 0){
+      upserts.push({
+        hogar_id: hogarId,
+        categoria_id: c.id,
+        monto_ars: val,
+        mes, anio
+      });
+    }
+  });
+
+  if(upserts.length){
+    await sb.from('presupuesto_hogar')
+      .upsert(upserts, {onConflict:'hogar_id,categoria_id,mes,anio'});
+  }
+
+  await loadHgPres();
+  toast(`Presupuesto del hogar guardado para ${upserts.length} categoría${upserts.length!==1?'s':''} ✓`);
 }
 
 // ══ SAVE PRES PERSONAL ══
