@@ -723,16 +723,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
             <div style="font-size:16px;font-weight:700;margin-bottom:6px">Vinculá tu hogar</div>
             <div style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px">Compartí gastos con tu pareja. Cada uno carga desde su celular y ven los saldos en tiempo real.</div>
             <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Tu código</div>
-            <div style="background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;margin-bottom:10px">
-              <div style="font-size:30px;font-weight:800;letter-spacing:6px;color:var(--green-dim);font-variant-numeric:tabular-nums" id="miCodigo">···</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:4px">Compartí este código con tu pareja</div>
+            <div style="background:#E8F5EE;border:2px solid #196C43;border-radius:var(--r);padding:20px;text-align:center;margin-bottom:10px">
+              <div style="font-size:11px;font-weight:700;color:#196C43;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Tu código único</div>
+              <div style="font-size:38px;font-weight:800;letter-spacing:8px;color:#196C43;font-variant-numeric:tabular-nums;font-family:'Plus Jakarta Sans',sans-serif" id="miCodigo">···</div>
+              <div style="font-size:12px;color:#6F7A71;margin-top:8px;line-height:1.5">Compartí este código con tu pareja.<br>Ella lo ingresa en <strong>su</strong> app para vincularse.</div>
             </div>
-            <button onclick="copiarCodigo()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:11px;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px"><span class="ms ms-sm">content_copy</span> Copiar código</button>
+            <button onclick="copiarCodigo()" style="width:100%;background:#196C43;border:none;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(25,108,67,.25)"><span class="ms ms-sm">content_copy</span> Copiar mi código</button>
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;color:var(--text3);font-size:13px"><div style="flex:1;height:1px;background:var(--border)"></div>o ingresá el código de tu pareja<div style="flex:1;height:1px;background:var(--border)"></div></div>
             <div id="vinErr" class="auth-err"></div>
             <div id="vinOk" class="auth-ok"></div>
-            <div class="fg"><input class="finp" id="codigoPareja" placeholder="ABC123" maxlength="6" style="text-align:center;font-size:24px;font-weight:700;letter-spacing:6px;text-transform:uppercase"></div>
-            <button onclick="vincularHogar()" id="vinBtn" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--rs);padding:13px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px"><span class="ms ms-sm">link</span> Vincular hogar</button>
+            <div class="fg">
+              <label class="flbl">Código de tu pareja</label>
+              <input class="finp" id="codigoPareja" placeholder="ABC123" maxlength="6"
+                style="text-align:center;font-size:28px;font-weight:800;letter-spacing:8px;text-transform:uppercase;background:#F1F3F4"
+                oninput="this.value=this.value.toUpperCase()">
+            </div>
+            <button onclick="vincularHogar()" id="vinBtn" style="width:100%;background:#191C1D;color:#fff;border:none;border-radius:var(--rs);padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px"><span class="ms ms-sm">link</span> Vincular hogar</button>
           </div>
         </div>
 
@@ -1444,42 +1450,102 @@ async function vincularHogar(){
     if(vinErrEl){ vinErrEl.textContent='Ingresá un código de 6 caracteres.'; vinErrEl.style.display='block'; }
     return;
   }
+  // Verificar que no sea el propio código
+  if(codigo === genCodigo(user.id)){
+    if(vinErrEl){ vinErrEl.textContent='Ese es tu propio código. Compartíselo a tu pareja.'; vinErrEl.style.display='block'; }
+    return;
+  }
+
   const btn = document.getElementById('vinBtn');
-  btn.disabled = true; btn.textContent = 'Vinculando...';
+  btn.disabled = true; btn.textContent = 'Buscando...';
 
-  // buscar usuario con ese codigo (prefix match en id)
-  const { data: perfiles, error } = await sb.from('perfiles').select('id, hogar_id, nombre').neq('id', user.id);
-  if(error){
-    if(vinErrEl){ vinErrEl.textContent='Error al buscar. Intentá de nuevo.'; vinErrEl.style.display='block'; }
-    btn.disabled=false; btn.textContent='Vincular hogar'; return;
+  // Buscar en perfiles por codigo_vinculacion (campo dedicado)
+  // o por prefijo del UUID como fallback
+  let match = null;
+
+  // Intento 1: buscar por campo codigo_vinculacion si existe
+  const { data: byCode } = await sb.from('perfiles')
+    .select('id, hogar_id, nombre')
+    .eq('codigo_vinculacion', codigo)
+    .neq('id', user.id)
+    .single();
+
+  if(byCode) {
+    match = byCode;
+  } else {
+    // Intento 2: buscar todos y filtrar por UUID prefix (puede fallar con RLS)
+    const { data: todos, error: rErr } = await sb.from('perfiles')
+      .select('id, hogar_id, nombre')
+      .neq('id', user.id);
+
+    if(rErr){
+      // RLS bloqueó la consulta - necesitamos el código exacto
+      if(vinErrEl){
+        vinErrEl.innerHTML = 'No se pudo buscar el código.<br><small>Asegurate de que tu pareja esté registrada en Wally y que el código sea exactamente el que aparece en su pantalla.</small>';
+        vinErrEl.style.display='block';
+      }
+      btn.disabled=false; btn.textContent='Vincular hogar'; return;
+    }
+
+    match = todos?.find(p => genCodigo(p.id) === codigo);
   }
-  const match = perfiles?.find(p => genCodigo(p.id) === codigo);
+
   if(!match){
-    if(vinErrEl){ vinErrEl.textContent='No se encontró ningún usuario con ese código.'; vinErrEl.style.display='block'; }
+    if(vinErrEl){
+      vinErrEl.innerHTML = 'No se encontró ninguna cuenta con ese código.<br><small>Verificá que tu pareja esté registrada en Wally y que el código sea correcto.</small>';
+      vinErrEl.style.display='block';
+    }
     btn.disabled=false; btn.textContent='Vincular hogar'; return;
   }
 
-  let hId = match.hogar_id;
-  if(!hId){
-    // crear hogar nuevo
-    const { data: hogar, error: he } = await sb.from('hogares').insert({ nombre: 'Nuestro hogar' }).select().single();
-    if(he){ if(vinErrEl){ vinErrEl.textContent='Error al crear hogar.'; vinErrEl.style.display='block'; } btn.disabled=false; btn.textContent='Vincular hogar'; return; }
-    hId = hogar.id;
-    await sb.from('perfiles').update({ hogar_id: hId }).eq('id', match.id);
-  }
-  await sb.from('perfiles').update({ hogar_id: hId, pareja_nombre: match.nombre }).eq('id', user.id);
-  await sb.from('perfiles').update({ pareja_nombre: perfil.nombre || user.email }).eq('id', match.id);
+  btn.textContent = 'Creando hogar...';
 
+  // Crear o reutilizar hogar
+  let hId = match.hogar_id || perfil.hogar_id;
+  if(!hId){
+    const { data: hogar, error: he } = await sb.from('hogares')
+      .insert({ nombre: 'Nuestro hogar' }).select().single();
+    if(he){
+      if(vinErrEl){ vinErrEl.textContent='Error al crear el hogar. Intentá de nuevo.'; vinErrEl.style.display='block'; }
+      btn.disabled=false; btn.textContent='Vincular hogar'; return;
+    }
+    hId = hogar.id;
+  }
+
+  // Actualizar ambos perfiles
+  const miNombre = perfil.nombre || user.email?.split('@')[0] || 'Tu pareja';
+  const suNombre = match.nombre || 'Tu pareja';
+
+  const [r1, r2] = await Promise.all([
+    sb.from('perfiles').update({ hogar_id: hId, pareja_nombre: suNombre }).eq('id', user.id),
+    sb.from('perfiles').update({ hogar_id: hId, pareja_nombre: miNombre }).eq('id', match.id)
+  ]);
+
+  if(r1.error){
+    if(vinErrEl){ vinErrEl.textContent='Error al guardar. Intentá de nuevo.'; vinErrEl.style.display='block'; }
+    btn.disabled=false; btn.textContent='Vincular hogar'; return;
+  }
+
+  // Actualizar estado local
   hogarId = hId;
   perfil.hogar_id = hId;
-  perfil.pareja_nombre = match.nombre;
+  perfil.pareja_nombre = suNombre;
+
   btn.disabled=false; btn.textContent='Vincular hogar';
-  if(vinOkEl){ vinOkEl.textContent='¡Hogar vinculado con '+match.nombre+'! 🎉'; vinOkEl.style.display='block'; }
-  toast('¡Vinculado con ' + match.nombre + '! 🎉');
+  if(vinOkEl){
+    vinOkEl.innerHTML = '¡Hogar vinculado con <strong>' + suNombre + '</strong>! 🎉<br><small>Ya podés registrar gastos compartidos.</small>';
+    vinOkEl.style.display='block';
+  }
+  toast('¡Vinculado con ' + suNombre + '! 🎉');
+
   await Promise.all([loadHgGastos(), loadHgPagos(), loadHgPres()]);
   updateAjustesUI();
-  renderHogar();
-  renderInicio();
+
+  // Refresh panel after short delay to show content
+  setTimeout(() => {
+    showGruposPanel('hogar');
+    renderInicio();
+  }, 1500);
 }
 
 
