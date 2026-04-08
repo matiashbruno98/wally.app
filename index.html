@@ -647,6 +647,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
         </div>
       </div>
 
+      <div class="sect" id="resumenMensualSect" style="display:none">
+        <div class="sect-title">Resumen de <span id="resumenMesNombre"></span></div>
+        <div style="margin:0 16px">
+          <div class="card" style="position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#196C43;border-radius:4px 0 0 4px"></div>
+            <div style="padding-left:8px">
+              <div id="resumenTexto" style="font-size:14px;color:#191C1D;line-height:1.65;font-weight:500"></div>
+              <div id="resumenLoading" style="font-size:13px;color:var(--text3);display:none">
+                <span class="spinner" style="width:16px;height:16px;margin:0;display:inline-block;vertical-align:middle;margin-right:6px"></span>Generando resumen...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="sect" id="hogarCardSect">
         <div class="sect-title">Hogar compartido <span class="sect-link" onclick="goTab('s-grupos')">Ver detalle</span></div>
         <div id="homeHogarCard" style="margin:0 16px"></div>
@@ -1047,7 +1062,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Nueva transacción</div>
   <div class="sheet-body">
     <div class="ttog"><div class="tbtn ai" id="ti" onclick="setTT('income')">▲ Ingreso</div><div class="tbtn" id="te" onclick="setTT('expense')">▼ Egreso</div></div>
-    <div class="fg"><label class="flbl">Descripción</label><input class="finp" id="fdesc" placeholder="Ej: Café, Supermercado..."></div>
+    <div class="fg"><label class="flbl">Descripción</label><div style="position:relative"><input class="finp" id="fdesc" placeholder="Ej: Café, Supermercado..." oninput="debounceCategorize()"><span id="catLoadingIcon" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);display:none">⏳</span></div></div>
     <div class="frow">
       <div class="fg"><label class="flbl">Monto</label><input class="finp" id="famt" type="number" inputmode="decimal" placeholder="0" oninput="updConv('cvprev','famt','fcur')"></div>
       <div class="fg"><label class="flbl">Moneda</label><select class="fsel" id="fcur" onchange="updConv('cvprev','famt','fcur')"><option value="ARS">$ Pesos</option><option value="USD">USD</option></select></div>
@@ -1672,6 +1687,8 @@ function renderInicio(){
 
   // donut chart (render after short delay to ensure canvas is ready)
   setTimeout(renderDonut, 100);
+  // AI monthly summary
+  setTimeout(generarResumenMensual, 800);
 
   if(hogarId){
     document.getElementById('hogarCardSect').style.display = '';
@@ -2406,7 +2423,7 @@ async function savePareja(){
 }
 
 // ══ CATEGORÍAS ══
-function setTT(t){ txType=t; document.getElementById('ti').className='tbtn'+(t==='income'?' ai':''); document.getElementById('te').className='tbtn'+(t==='expense'?' ae':''); popSel('fcat', cats.filter(c=>c.tipo==='both'||c.tipo===t)); }
+function setTT(t){ txType=t; document.getElementById('ti').className='tbtn'+(t==='income'?' ai':''); document.getElementById('te').className='tbtn'+(t==='expense'?' ae':''); popSel('fcat', cats.filter(c=>c.tipo==='both'||c.tipo===t)); const desc=document.getElementById('fdesc')?.value?.trim(); if(desc && desc.length>=3) autoCategorize(); }
 function editCatFn(id){ editCatId=id; const c=cats.find(x=>x.id===id); if(c){ document.getElementById('cname').value=c.nombre; selEmoji=c.emoji; selColor=c.color; selCType=c.tipo; document.getElementById('catTitle').textContent='Editar categoría'; } openSheet('catSheet'); }
 function buildEP(){ document.getElementById('epicker').innerHTML=EMOJIS.map(e=>`<div class="eopt${e===selEmoji?' sel':''}" onclick="selE('${e}')">${e}</div>`).join(''); }
 function selE(e){ selEmoji=e; document.querySelectorAll('.eopt').forEach(el=>el.classList.toggle('sel',el.textContent===e)); }
@@ -3212,6 +3229,122 @@ function goToAuth(tab){
       : document.getElementById('loginEmail');
     if(inp) inp.focus();
   }, 250);
+}
+
+// ══ IA — CATEGORIZACIÓN AUTOMÁTICA ══
+let categorizeTimer = null;
+
+function debounceCategorize(){
+  clearTimeout(categorizeTimer);
+  categorizeTimer = setTimeout(autoCategorize, 600);
+}
+
+async function autoCategorize(){
+  const desc = document.getElementById('fdesc')?.value?.trim();
+  if(!desc || desc.length < 3) return;
+
+  const icon = document.getElementById('catLoadingIcon');
+  if(icon) icon.style.display = 'block';
+
+  try {
+    const filteredCats = cats.filter(c => c.tipo === 'both' || c.tipo === txType);
+    const res = await fetch('/api/categorize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        descripcion: desc,
+        categorias: filteredCats.map(c => ({ id: c.id, nombre: c.nombre, tipo: c.tipo }))
+      })
+    });
+    const data = await res.json();
+    if(data.categoria_id){
+      const sel = document.getElementById('fcat');
+      if(sel) {
+        sel.value = data.categoria_id;
+        // visual feedback
+        sel.style.borderColor = '#196C43';
+        setTimeout(() => { sel.style.borderColor = ''; }, 1500);
+      }
+    }
+  } catch(e) {
+    console.log('Categorize error:', e);
+  } finally {
+    if(icon) icon.style.display = 'none';
+  }
+}
+
+// ══ IA — RESUMEN MENSUAL ══
+let resumenGenerado = {};
+
+async function generarResumenMensual(){
+  // Show for previous month (first 7 days of current month)
+  // or current month if specifically requested
+  const hoy = new Date();
+  const esPrimeraSemana = hoy.getDate() <= 7;
+
+  let mesSummary = curMonth;
+  let anioSummary = curYear;
+
+  if(esPrimeraSemana && curMonth === hoy.getMonth() && curYear === hoy.getFullYear()){
+    // Show previous month summary
+    mesSummary = hoy.getMonth() - 1;
+    anioSummary = hoy.getFullYear();
+    if(mesSummary < 0){ mesSummary = 11; anioSummary--; }
+  }
+
+  const cacheKey = `${mesSummary}-${anioSummary}`;
+  const sect = document.getElementById('resumenMensualSect');
+  const textoEl = document.getElementById('resumenTexto');
+  const loadingEl = document.getElementById('resumenLoading');
+  const mesNombreEl = document.getElementById('resumenMesNombre');
+
+  // Get transactions for that month
+  const txsMes = txsCache.filter(t => {
+    if(!t.fecha) return false;
+    const d = new Date(t.fecha + 'T00:00:00');
+    return d.getMonth() === mesSummary && d.getFullYear() === anioSummary;
+  });
+
+  if(!txsMes.length) return; // no data, don't show
+
+  sect.style.display = '';
+  if(mesNombreEl) mesNombreEl.textContent = MONTHS[mesSummary];
+
+  // Use cached if available
+  if(resumenGenerado[cacheKey]){
+    textoEl.textContent = resumenGenerado[cacheKey];
+    return;
+  }
+
+  // Show loading
+  textoEl.style.display = 'none';
+  loadingEl.style.display = 'block';
+
+  try {
+    const res = await fetch('/api/summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transacciones: txsMes,
+        mes: mesSummary,
+        anio: anioSummary,
+        nombre: perfil?.nombre || 'vos',
+        categorias: cats.map(c => ({ id: c.id, nombre: c.nombre }))
+      })
+    });
+    const data = await res.json();
+    if(data.resumen){
+      resumenGenerado[cacheKey] = data.resumen;
+      textoEl.textContent = data.resumen;
+      textoEl.style.display = 'block';
+    }
+  } catch(e) {
+    console.log('Summary error:', e);
+    sect.style.display = 'none';
+  } finally {
+    loadingEl.style.display = 'none';
+    textoEl.style.display = 'block';
+  }
 }
 
 // ══ ARRANCAR ══
