@@ -30,6 +30,8 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow:hidden;transition:background .2s,color .2s}
 .ms{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;font-size:24px;line-height:1;display:inline-block;vertical-align:middle}
+.panel-transition{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .ms-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
 .ms-sm{font-size:18px}
 .ms-lg{font-size:28px}
@@ -104,7 +106,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .tabbar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.05);padding:8px 0 calc(var(--safe-bottom) + 4px);display:flex;z-index:100}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0}
 .tab-icon{font-size:22px;line-height:1}
-.tab-label{font-size:10px;color:var(--text3);font-weight:700}
+.tab-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:none}
 .tab-item.active .tab-label{color:var(--green-dim)}
 
 /* ── FAB ── */
@@ -456,11 +458,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
           <button class="month-btn" onclick="chMon(1)">›</button>
         </div>
       </div>
-      <div class="px" style="margin-top:16px;margin-bottom:20px">
-        <button onclick="openSheet('txSheet')" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:16px;font-size:16px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
-          <span style="font-size:22px;font-weight:300">＋</span> Cargar transacción
-        </button>
-      </div>
+      <div style="height:8px"></div>
       <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:500;padding:0 16px;margin-bottom:10px">Tu economía · <span id="mesMostrado"></span></div>
       <div class="metrics-scroll" id="metricsScroll"></div>
       <div class="sect">
@@ -651,13 +649,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
         <div class="card" style="margin:0 16px;padding:0;overflow:hidden"><div id="transfList"></div></div>
       </div>
 
+      <!-- Análisis / Presupuesto shortcut -->
+      <div class="sect">
+        <div class="sect-title">Análisis</div>
+        <div style="margin:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div onclick="goTab('s-presupuesto')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)">
+            <span class="ms" style="color:var(--green);font-size:28px">trending_down</span>
+            <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:8px">Mayor gasto</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:3px" id="mayorGastoLabel">—</div>
+          </div>
+          <div onclick="goTab('s-presupuesto')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)">
+            <span class="ms" style="color:var(--amber);font-size:28px">donut_large</span>
+            <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:8px">Presupuesto</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:3px" id="presupuestoLabel">Ver detalle</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- MOVIMIENTOS -->
     <div id="s-movimientos">
       <div class="topbar"><div class="topbar-row"><h1>Movimientos</h1></div></div>
-      <div style="padding:12px 16px 0">
-        <input class="finp" id="txSearch" placeholder="Buscar descripción o categoría..." oninput="renderMovimientos()" style="font-size:14px;padding:10px 14px">
+      <div style="padding:12px 16px 0;position:relative">
+        <span class="ms ms-sm" style="position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;margin-top:6px">search</span>
+        <input class="finp" id="txSearch" placeholder="Buscar transacciones..." oninput="renderMovimientos()" style="font-size:14px;padding:10px 14px 10px 40px">
       </div>
       <div class="month-nav" style="margin-top:10px">
         <button class="month-btn" onclick="chMon(-1)">‹</button>
@@ -739,14 +755,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
             </div>
             <div style="display:flex;align-items:center;gap:6px"><span class="set-val" id="setParejaName">—</span><span class="ms ms-sm" style="color:var(--text3)">chevron_right</span></div>
           </div>
-          <div class="set-row" style="cursor:default">
+          <div class="set-row" onclick="document.getElementById('seccionCategorias').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
             <div style="display:flex;align-items:center;gap:12px">
               <div style="width:34px;height:34px;border-radius:9px;background:#FFECD2;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="ms ms-sm" style="color:var(--amber)">category</span></div>
               <span class="set-label">Categorías</span>
             </div>
             <span class="ms ms-sm" style="color:var(--text3)">chevron_right</span>
           </div>
-          <div class="set-row" style="cursor:default;border-bottom:none">
+          <div class="set-row" onclick="openSheet('fixSheet')" style="cursor:pointer;border-bottom:none">
             <div style="display:flex;align-items:center;gap:12px">
               <div style="width:34px;height:34px;border-radius:9px;background:#F3F4F5;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="ms ms-sm" style="color:var(--text2)">update</span></div>
               <span class="set-label">Gastos Recurrentes</span>
@@ -775,7 +791,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       </div>
 
       <!-- Categorías -->
-      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:800;padding:0 16px;margin:20px 0 8px">Categorías</div>
+      <div id="seccionCategorias" style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:800;padding:0 16px;margin:20px 0 8px">Categorías</div>
       <div style="margin:0 16px">
         <div class="cat-grid" id="catGrid"></div>
         <button class="bnewcat" onclick="openSheet('catSheet')"><span class="ms ms-sm">add</span> Nueva categoría</button>
@@ -805,7 +821,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   <nav class="tabbar">
     <div class="tab-item active" onclick="goTab('s-inicio')"><div class="tab-icon"><span class="ms tab-ms">home</span></div><div class="tab-label">Inicio</div></div>
     <div class="tab-item" onclick="goTab('s-grupos')"><div class="tab-icon"><span class="ms tab-ms">group</span></div><div class="tab-label">Grupos</div></div>
-    <div class="tab-item" onclick="goTab('s-cajas')"><div class="tab-icon"><span class="ms tab-ms">account_balance_wallet</span></div><div class="tab-label">Cajas</div></div>
+    <div class="tab-item" onclick="goTab('s-cajas')"><div class="tab-icon"><span class="ms tab-ms">account_balance_wallet</span></div><div class="tab-label">Billeteras</div></div>
     <div class="tab-item" onclick="goTab('s-movimientos')"><div class="tab-icon"><span class="ms tab-ms">swap_horiz</span></div><div class="tab-label">Movimientos</div></div>
     <div class="tab-item" onclick="goTab('s-ajustes')"><div class="tab-icon"><span class="ms tab-ms">settings</span></div><div class="tab-label">Ajustes</div></div>
   </nav>
@@ -994,10 +1010,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="cajaNuevaTitle">Nueva caja</div>
   <div class="sheet-body">
     <div class="fg"><label class="flbl">Nombre</label><input class="finp" id="cajaNm" placeholder="Ej: Cuenta Banco, Efectivo..."></div>
-    <div class="frow">
-      <div class="fg"><label class="flbl">Emoji</label><input class="finp" id="cajaEmoji" placeholder="🏦" style="font-size:24px;text-align:center"></div>
-      <div class="fg"><label class="flbl">Moneda</label><select class="fsel" id="cajaMon"><option value="ARS">$ Pesos</option><option value="USD">USD</option></select></div>
-    </div>
+    <div class="fg"><label class="flbl">Ícono</label><div id="cajaEmojiPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"></div><input type="hidden" id="cajaEmoji" value="🏦"></div>
+    <div class="fg"><label class="flbl">Moneda</label><select class="fsel" id="cajaMon"><option value="ARS">$ Pesos</option><option value="USD">USD</option></select></div>
     <div class="fg"><label class="flbl">Saldo inicial</label><input class="finp" id="cajaSaldo" type="number" inputmode="decimal" placeholder="0"></div>
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('cajaNuevaSheet')">Cancelar</button><button class="bsub" onclick="saveCaja()">Guardar</button></div></div>
@@ -1121,7 +1135,7 @@ const pagMes = () => pagosCache.filter(p => {
 });
 
 // ══ TOAST ══
-function toast(msg, ms=2500){
+function toast(msg, ms=3500){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
@@ -1243,6 +1257,10 @@ async function vincularHogar(){
 
 // ══ INIT ══
 async function initApp(){
+  // hide everything while loading
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'none';
+
   const { data: { session } } = await sb.auth.getSession();
   if(session?.user){
     user = session.user;
@@ -1282,12 +1300,34 @@ async function startApp(){
   await Promise.all([loadCats(), loadCajas(), loadTransferencias(), loadGrupos(), loadTxs(), loadHgGastos(), loadHgPagos(), loadHgPres(), loadPres(), loadFix(), loadFixPagos()]);
   renderAll();
   updateAjustesUI();
+  // pre-fill codigo immediately
+  const cEl = document.getElementById('miCodigo');
+  if(cEl && user?.id) cEl.textContent = genCodigo(user.id);
 }
 
 // ══ LOADERS ══
+const DEFAULT_CATS = [
+  {nombre:'Comida',emoji:'🍔',color:'#22C55E',tipo:'expense'},
+  {nombre:'Transporte',emoji:'🚌',color:'#3B82F6',tipo:'expense'},
+  {nombre:'Entretenimiento',emoji:'🎬',color:'#8B5CF6',tipo:'expense'},
+  {nombre:'Salud',emoji:'💊',color:'#F87171',tipo:'both'},
+  {nombre:'Servicios',emoji:'⚡',color:'#F59E0B',tipo:'expense'},
+  {nombre:'Ropa',emoji:'👕',color:'#F97316',tipo:'expense'},
+  {nombre:'Educación',emoji:'📚',color:'#6EE7B7',tipo:'both'},
+  {nombre:'Sueldo',emoji:'💼',color:'#22C55E',tipo:'income'},
+  {nombre:'Freelance',emoji:'💻',color:'#3B82F6',tipo:'income'},
+  {nombre:'Otro',emoji:'📦',color:'#94A3B8',tipo:'both'},
+];
+
 async function loadCats(){
   const { data } = await sb.from('categorias').select('*').eq('user_id', user.id).order('nombre');
   cats = data || [];
+  // if no cats yet, create defaults
+  if(!cats.length){
+    const rows = DEFAULT_CATS.map(c => ({...c, user_id: user.id}));
+    const { data: created } = await sb.from('categorias').insert(rows).select();
+    cats = created || [];
+  }
 }
 async function loadTxs(){
   const { data } = await sb.from('transacciones').select('*').eq('user_id', user.id).order('fecha', {ascending:false});
@@ -1329,6 +1369,7 @@ function renderTab(id){
   if(id==='s-movimientos') renderMovimientos();
   if(id==='s-grupos') renderGrupos();
   if(id==='s-cajas') renderCajas();
+  if(id==='s-presupuesto') renderPresupuesto();
   if(id==='s-ajustes') renderAjustes();
 }
 
@@ -1354,7 +1395,8 @@ function renderInicio(){
   const hoy = new Date();
   const hora = new Date().getHours();
   const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
-  document.getElementById('saludoNombre').textContent = saludo + ', ' + (perfil?.nombre || '');
+  const nombreUsuario = perfil?.nombre || user?.email?.split('@')[0] || '';
+  document.getElementById('saludoNombre').textContent = saludo + (nombreUsuario ? ', ' + nombreUsuario : '');
   document.getElementById('fechaHoy').textContent = hoy.getDate() + ' de ' + MONTHS[hoy.getMonth()] + ' ' + hoy.getFullYear();
   document.getElementById('cotizPill').textContent = cotiz.toLocaleString('es-AR');
 
@@ -1383,7 +1425,16 @@ function renderInicio(){
   document.getElementById('inicioMesLbl').textContent = MONTHS[curMonth]+' '+curYear;
 
   const recent = monTxs().slice(0,5);
-  document.getElementById('homeTxList').innerHTML = txListGroupedByDate(recent);
+  if(!recent.length){
+    document.getElementById('homeTxList').innerHTML = `
+      <div style="text-align:center;padding:32px 20px 24px">
+        <span class="ms" style="font-size:44px;color:var(--border2)">receipt_long</span>
+        <div style="font-size:15px;font-weight:700;color:var(--text2);margin-top:10px">Sin movimientos este mes</div>
+        <div style="font-size:13px;color:var(--text3);margin-top:6px;line-height:1.5">Tocá el botón <strong>+</strong> para cargar tu primer movimiento</div>
+      </div>`;
+  } else {
+    document.getElementById('homeTxList').innerHTML = txListGroupedByDate(recent);
+  }
 
   // donut chart (render after short delay to ensure canvas is ready)
   setTimeout(renderDonut, 100);
@@ -1641,7 +1692,7 @@ function updateAjustesUI(){
   document.getElementById('setcotiz').textContent = '$' + cotiz.toLocaleString('es-AR');
   document.getElementById('setParejaName').textContent = perfil?.pareja_nombre || '—';
   const ajNombre = document.getElementById('ajustesNombre');
-  if(ajNombre) ajNombre.textContent = perfil?.nombre || user?.email || '—';
+  if(ajNombre) ajNombre.textContent = perfil?.nombre || user?.email?.split('@')[0] || '—';
 }
 
 // ══ NAVEGACIÓN ══
@@ -1677,8 +1728,10 @@ function openSheet(id){
     toggleCompartidoUI();
     txQuienPago='yo';
     setTxQ('yo');
-    // only show compartido if hogar linked
-    document.getElementById('compartidoRow').style.display = hogarId ? 'flex' : 'none';
+    // only show compartido if hogar linked AND pareja vinculada
+    const tieneHogarCompleto = !!(hogarId && perfil?.pareja_nombre);
+    document.getElementById('compartidoRow').style.display = tieneHogarCompleto ? 'flex' : 'none';
+    document.getElementById('quienPagoRow').style.display = 'none';
   }
   if(id==='hgSheet'){
     document.getElementById('hgdate').value = new Date().toISOString().split('T')[0];
@@ -1715,8 +1768,8 @@ function openSheet(id){
   }
   if(id==='cajaNuevaSheet'){
     document.getElementById('cajaNm').value='';
-    document.getElementById('cajaEmoji').value='🏦';
     document.getElementById('cajaSaldo').value='';
+    buildCajaEmojiPicker('🏦');
   }
   if(id==='importSheet'){
     popCajaSel('importCaja');
@@ -2011,11 +2064,11 @@ async function loadGrupos(){
 // saldo de una caja = saldo_inicial + ingresos - egresos + transferencias
 function calcSaldoCaja(caja){
   const txs = txsCache.filter(t => t.caja_id === caja.id);
-  const inc = txs.filter(t=>t.tipo==='income').reduce((s,t)=>s+t.monto,0);
-  const exp = txs.filter(t=>t.tipo==='expense').reduce((s,t)=>s+t.monto,0);
-  const transfEntrada = transfCache.filter(t=>t.caja_destino_id===caja.id).reduce((s,t)=>s+t.monto_destino,0);
-  const transfSalida  = transfCache.filter(t=>t.caja_origen_id===caja.id).reduce((s,t)=>s+t.monto_origen,0);
-  return (caja.saldo_inicial||0) + inc - exp + transfEntrada - transfSalida;
+  const inc = txs.filter(t=>t.tipo==='income').reduce((s,t)=>s+(t.monto||0),0);
+  const exp = txs.filter(t=>t.tipo==='expense').reduce((s,t)=>s+(t.monto||0),0);
+  const transfEntrada = transfCache.filter(t=>t.caja_destino_id===caja.id).reduce((s,t)=>s+(t.monto_destino||0),0);
+  const transfSalida  = transfCache.filter(t=>t.caja_origen_id===caja.id).reduce((s,t)=>s+(t.monto_origen||0),0);
+  return (parseFloat(caja.saldo_inicial)||0) + inc - exp + transfEntrada - transfSalida;
 }
 
 function cajaTypeIcon(c){
@@ -2061,6 +2114,17 @@ function renderCajas(){
     </div>`;
   }).join('') || '<div class="empty">Sin cajas cargadas</div>';
 
+  // mayor gasto analysis
+  const expTxs = txsCache.filter(t=>t.tipo==='expense');
+  const byCat = {};
+  expTxs.forEach(t => byCat[t.categoria_id] = (byCat[t.categoria_id]||0) + t.monto_ars);
+  const topCat = Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0];
+  const mgEl = document.getElementById('mayorGastoLabel');
+  if(mgEl) mgEl.textContent = topCat ? gc(topCat[0]).nombre : '—';
+  const presEl = document.getElementById('presupuestoLabel');
+  const nPres = presCache.filter(p=>p.mes===curMonth+1&&p.anio===curYear).length;
+  if(presEl) presEl.textContent = nPres > 0 ? nPres + ' categoría' + (nPres!==1?'s':'') : 'Sin configurar';
+
   // transferencias list
   document.getElementById('transfList').innerHTML = transfCache.length ? transfCache.slice(0,8).map(t=>{
     const orig = cajasCache.find(c=>c.id===t.caja_origen_id);
@@ -2083,9 +2147,18 @@ let currentGruposPanel = 'home';
 
 function showGruposPanel(panel){
   currentGruposPanel = panel;
-  document.getElementById('gruposHome').style.display = panel==='home' ? 'flex' : 'none';
-  document.getElementById('panelHogar').style.display = panel==='hogar' ? 'block' : 'none';
-  document.getElementById('panelEventuales').style.display = panel==='eventuales' ? 'block' : 'none';
+  const home = document.getElementById('gruposHome');
+  const hogar = document.getElementById('panelHogar');
+  const eventuales = document.getElementById('panelEventuales');
+  home.style.display = panel==='home' ? 'flex' : 'none';
+  hogar.style.display = panel==='hogar' ? 'block' : 'none';
+  eventuales.style.display = panel==='eventuales' ? 'block' : 'none';
+  if(panel!=='home'){
+    const el = panel==='hogar' ? hogar : eventuales;
+    el.classList.remove('panel-transition');
+    void el.offsetWidth;
+    el.classList.add('panel-transition');
+  }
 
   if(panel==='hogar'){
     const tienePareja = !!(perfil?.pareja_nombre);
@@ -2096,7 +2169,7 @@ function showGruposPanel(panel){
       vinDiv.style.display='block'; conDiv.style.display='none';
       if(addBtn) addBtn.style.display='none';
       const codigoEl=document.getElementById('miCodigo');
-      if(codigoEl) codigoEl.textContent=genCodigo(user.id);
+      if(codigoEl && user?.id) codigoEl.textContent=genCodigo(user.id);
     } else {
       vinDiv.style.display='none'; conDiv.style.display='block';
       if(addBtn) addBtn.style.display='flex';
@@ -2189,6 +2262,26 @@ function renderGruposEventuales(){
       ${!g.cerrado?`<button onclick="cerrarGrupo('${g.id}')" style="margin-top:12px;width:100%;background:none;border:1px solid var(--border);border-radius:var(--rs);padding:8px;font-size:13px;color:var(--text3);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Cerrar grupo</button>`:''}
     </div>`;
   }).join('');
+}
+
+// ── CAJA EMOJI PICKER ──
+const CAJA_EMOJIS = ['🏦','💵','💲','💳','🏧','💰','🪙','📈','🏠','💼'];
+let selCajaEmojiVal = '🏦';
+
+function buildCajaEmojiPicker(sel){
+  selCajaEmojiVal = sel || '🏦';
+  document.getElementById('cajaEmoji').value = selCajaEmojiVal;
+  const picker = document.getElementById('cajaEmojiPicker');
+  if(!picker) return;
+  picker.innerHTML = CAJA_EMOJIS.map(e=>`
+    <div onclick="selCajaEmoji('${e}')" id="ceopt-${e}" style="width:44px;height:44px;border-radius:10px;border:2px solid ${e===selCajaEmojiVal?'var(--green)':'var(--border)'};background:${e===selCajaEmojiVal?'var(--green-bg)':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;transition:all .12s">${e}</div>
+  `).join('');
+}
+
+function selCajaEmoji(e){
+  selCajaEmojiVal = e;
+  document.getElementById('cajaEmoji').value = e;
+  buildCajaEmojiPicker(e);
 }
 
 // ── SAVE CAJA ──
@@ -2386,7 +2479,17 @@ function renderDonut(){
   document.getElementById('donutLabel').textContent = donutTab==='expense'?'Egresos':'Ingresos';
 
   if(donutChartInstance) donutChartInstance.destroy();
-  if(!total){ canvas.style.display='none'; document.getElementById('donutLegend').innerHTML='<div style="font-size:13px;color:var(--text3)">Sin datos este mes</div>'; return; }
+  if(!total){
+    canvas.style.display='none';
+    document.getElementById('donutLegend').innerHTML='';
+    document.getElementById('donutTotal').textContent='';
+    document.getElementById('donutLabel').textContent='Sin datos';
+    // hide toggle tabs
+    const tabs = document.querySelectorAll('#chartTabExp,#chartTabInc');
+    tabs.forEach(t=>t.style.opacity='.4');
+    return;
+  }
+  document.querySelectorAll('#chartTabExp,#chartTabInc').forEach(t=>t.style.opacity='1');
   canvas.style.display='';
 
   donutChartInstance = new Chart(canvas, {
@@ -2499,8 +2602,13 @@ function openEditTx(id){
   document.getElementById('efamt').value = t.monto;
   document.getElementById('efcur').value = t.moneda;
   document.getElementById('efdate').value = t.fecha;
+  // populate cats first, then set value
   popSel('efcat', cats.filter(c=>c.tipo==='both'||c.tipo===t.tipo));
-  document.getElementById('efcat').value = t.categoria_id || '';
+  // need timeout to ensure DOM updates before setting value
+  setTimeout(() => {
+    const sel = document.getElementById('efcat');
+    if(sel && t.categoria_id) sel.value = t.categoria_id;
+  }, 50);
   openSheet('editTxSheet');
 }
 
@@ -2651,14 +2759,24 @@ applyTheme(darkMode);
 // ══ WELCOME ══
 function showWelcome(){
   document.getElementById('welcomeScreen').style.display = 'flex';
+  document.getElementById('welcomeScreen').style.animation = 'fadeIn .25s ease';
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appMain').style.display = 'none';
 }
 
 function goToAuth(tab){
   document.getElementById('welcomeScreen').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'flex';
+  const auth = document.getElementById('authScreen');
+  auth.style.display = 'flex';
+  auth.style.animation = 'fadeIn .2s ease';
   switchAuthTab(tab);
+  // pre-focus first input
+  setTimeout(()=>{
+    const inp = tab==='register'
+      ? document.getElementById('regNombre')
+      : document.getElementById('loginEmail');
+    if(inp) inp.focus();
+  }, 250);
 }
 
 // ══ ARRANCAR ══
@@ -2666,7 +2784,7 @@ initApp();
 </script>
 </body>
 </html><!-- ══ WELCOME SCREEN ══ -->
-<div id="welcomeScreen" style="min-height:100vh;background:#F8F9FA;display:flex;flex-direction:column;overflow-y:auto">
+<div id="welcomeScreen" style="min-height:100vh;background:#F8F9FA;display:flex;flex-direction:column;overflow-y:auto;position:relative;z-index:10">
   <div style="background:var(--green);padding:56px 24px 40px;text-align:center;position:relative;overflow:hidden">
     <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);top:-60px;right:-40px"></div>
     <div style="position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06);bottom:-40px;left:-30px"></div>
