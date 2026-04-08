@@ -1258,8 +1258,10 @@ async function vincularHogar(){
 // ══ INIT ══
 async function initApp(){
   // hide everything while loading
-  document.getElementById('welcomeScreen').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'none';
+  const _ws = document.getElementById('welcomeScreen');
+  const _as = document.getElementById('authScreen');
+  if(_ws) _ws.style.display = 'none';
+  if(_as) _as.style.display = 'none';
 
   const { data: { session } } = await sb.auth.getSession();
   if(session?.user){
