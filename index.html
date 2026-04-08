@@ -117,11 +117,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)}
 .px{padding-left:16px;padding-right:16px}
 .sect{margin-top:18px}
-.sect-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding:0 16px;font-weight:800;display:flex;justify-content:space-between;align-items:center;padding-right:16px}
+.sect-title{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding:0 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;padding-right:16px}
 .sect-link{font-size:12px;color:var(--green);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500}
 
 /* ── METRICS ── */
-.metrics-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+.metrics-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 16px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:80px}
 .metrics-scroll::-webkit-scrollbar{display:none}
 .metric{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;min-width:145px;flex-shrink:0;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)}
 .metric-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-weight:500}
@@ -448,7 +448,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
               <span class="ms ms-sm" id="themeBtnIcon">light_mode</span>
             </button>
             <div class="cotiz-pill" onclick="openSheet('cotizSheet')" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px">
-              <span class="ms ms-sm">attach_money</span>$<span id="cotizPill">1.350</span>
+              <span class="ms ms-sm">attach_money</span><span id="cotizPill">1.350</span>
             </div>
           </div>
         </div>
@@ -458,9 +458,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
           <button class="month-btn" onclick="chMon(1)">›</button>
         </div>
       </div>
-      <div style="height:8px"></div>
-      <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:500;padding:0 16px;margin-bottom:10px">Tu economía · <span id="mesMostrado"></span></div>
-      <div class="metrics-scroll" id="metricsScroll"></div>
+      <div style="height:4px"></div>
+      <div style="font-size:11px;color:var(--text2);letter-spacing:.06em;font-weight:700;padding:0 16px;margin-bottom:10px">Tu economía · <span id="mesMostrado"></span></div>
+      <div class="metrics-scroll" id="metricsScroll" style="min-height:90px"></div>
       <div class="sect">
         <div class="sect-title">Últimos movimientos <span class="sect-link" onclick="goTab('s-movimientos')">Ver todos</span></div>
         <div id="homeTxList"></div>
@@ -825,7 +825,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
     <div class="tab-item" onclick="goTab('s-movimientos')"><div class="tab-icon"><span class="ms tab-ms">swap_horiz</span></div><div class="tab-label">Movimientos</div></div>
     <div class="tab-item" onclick="goTab('s-ajustes')"><div class="tab-icon"><span class="ms tab-ms">settings</span></div><div class="tab-label">Ajustes</div></div>
   </nav>
-  <button class="fab" onclick="openSheet('txSheet')"><span class="ms" style="font-size:28px;color:#fff">add</span></button>
+  <button class="fab" onclick="openSheet('txSheet')" aria-label="Nueva transacción"><span class="ms" style="font-size:28px;color:#fff;font-family:'Material Symbols Outlined'">add</span></button>
 </div>
 
 <!-- TOAST -->
@@ -1394,8 +1394,12 @@ function renderTab(id){
 
 function updateMonthLabels(){
   const ms = MONTHS[curMonth] + ' ' + curYear;
-  ['hogarMesLbl','movMesLbl','presMesLbl'].forEach(id => { const e=document.getElementById(id); if(e) e.textContent=ms; });
-  const mm = document.getElementById('mesMostrado'); if(mm) mm.textContent = MONTHS[curMonth];
+  ['hogarMesLbl','movMesLbl','presMesLbl','inicioMesLbl'].forEach(id => {
+    const e = document.getElementById(id);
+    if(e) e.textContent = ms;
+  });
+  const mm = document.getElementById('mesMostrado');
+  if(mm) mm.textContent = MONTHS[curMonth];
 }
 
 function calcSaldo(){
@@ -1469,7 +1473,7 @@ function renderInicio(){
     const pNm = perfil?.pareja_nombre || 'Pareja';
     const pIn = pNm.slice(0,2).toUpperCase();
     document.getElementById('homeHogarCard').innerHTML=`
-      <div class="card" style="cursor:pointer" onclick="goTab('s-hogar')">
+      <div class="card" style="cursor:pointer" onclick="goTab('s-grupos');setTimeout(()=>showGruposPanel('hogar'),100)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:10px">
             <div class="av yo" style="width:34px;height:34px;font-size:12px">${(perfil?.nombre||'YO').slice(0,2).toUpperCase()}</div>
@@ -1776,6 +1780,7 @@ function openSheet(id){
   if(id==='cotizSheet'){
     document.getElementById('cotizInp').value = cotiz;
     document.getElementById('cotizPrev').textContent = cotiz.toLocaleString('es-AR');
+    document.getElementById('cotizInp').select();
   }
   if(id==='parejaSheet') document.getElementById('parejaInp').value = perfil?.pareja_nombre || '';
   if(id==='transfSheet'){
@@ -2056,9 +2061,9 @@ async function loadCajas(){
   // if no cajas yet (existing user), create defaults
   if(!cajasCache.length){
     const defaults = [
-      {user_id:user.id, nombre:'Cuenta banco', emoji:'🏦', moneda:'ARS', saldo_inicial:0, orden:1},
-      {user_id:user.id, nombre:'Efectivo',     emoji:'💵', moneda:'ARS', saldo_inicial:0, orden:2},
-      {user_id:user.id, nombre:'Cuenta USD',   emoji:'💲', moneda:'USD', saldo_inicial:0, orden:3},
+      {user_id:user.id, nombre:'Cuenta banco', emoji:'🏦', moneda:'ARS', saldo_inicial:0, activa:true, orden:1},
+      {user_id:user.id, nombre:'Efectivo',     emoji:'💵', moneda:'ARS', saldo_inicial:0, activa:true, orden:2},
+      {user_id:user.id, nombre:'Cuenta USD',   emoji:'💲', moneda:'USD', saldo_inicial:0, activa:true, orden:3},
     ];
     const { data: created } = await sb.from('cajas').insert(defaults).select();
     cajasCache = created || [];
@@ -2098,10 +2103,14 @@ function cajaTypeIcon(c){
 }
 
 function renderCajas(){
-  // update balance total
+  // update balance total - recalculate all
   const totalARS = cajasCache.reduce((s,c)=>{
     const saldo = calcSaldoCaja(c);
-    return s + (c.moneda==='USD' ? saldo*cotiz : saldo);
+    return s + (c.moneda==='USD' ? Math.max(0,saldo)*cotiz : Math.max(0,saldo));
+  }, 0) + cajasCache.reduce((s,c)=>{
+    // also count negative balances
+    const saldo = calcSaldoCaja(c);
+    return s + (saldo < 0 ? (c.moneda==='USD' ? saldo*cotiz : saldo) : 0);
   }, 0);
   const elBal = document.getElementById('cajasBalanceTotal');
   if(elBal) elBal.textContent = fmt(totalARS);
@@ -2188,8 +2197,13 @@ function showGruposPanel(panel){
     if(!tienePareja){
       vinDiv.style.display='block'; conDiv.style.display='none';
       if(addBtn) addBtn.style.display='none';
+      // set code immediately from user.id
       const codigoEl=document.getElementById('miCodigo');
-      if(codigoEl && user?.id) codigoEl.textContent=genCodigo(user.id);
+      if(codigoEl && user?.id){
+        const code = genCodigo(user.id);
+        codigoEl.textContent = code;
+        codigoEl.style.letterSpacing = '6px';
+      }
     } else {
       vinDiv.style.display='none'; conDiv.style.display='block';
       if(addBtn) addBtn.style.display='flex';
@@ -2324,17 +2338,21 @@ function calcTransfDestino(){
   const dest = cajasCache.find(c=>c.id===document.getElementById('transfDestino').value);
   const monto = parseFloat(document.getElementById('transfMontoOrig').value)||0;
   const prev = document.getElementById('transfPrev');
-  if(orig&&dest&&orig.moneda!==dest.moneda&&monto>0){
-    if(orig.moneda==='USD'&&dest.moneda==='ARS'){
-      document.getElementById('transfMontoDest').value=(monto*cotiz).toFixed(0);
-      prev.style.display='block';
-      prev.textContent=`USD ${monto} × $${cotiz.toLocaleString('es-AR')} = ${fmt(monto*cotiz)}`;
-    } else if(orig.moneda==='ARS'&&dest.moneda==='USD'){
-      document.getElementById('transfMontoDest').value=(monto/cotiz).toFixed(2);
-      prev.style.display='block';
-      prev.textContent=`${fmt(monto)} ÷ $${cotiz.toLocaleString('es-AR')} = U$D ${(monto/cotiz).toFixed(2)}`;
-    }
-  } else { prev.style.display='none'; }
+  if(!orig||!dest||!monto){ prev.style.display='none'; return; }
+  if(orig.moneda===dest.moneda){
+    // same currency: auto-copy amount
+    document.getElementById('transfMontoDest').value = monto;
+    prev.style.display='block';
+    prev.textContent = 'Transferencia en ' + orig.moneda + ' — mismo tipo de moneda';
+  } else if(orig.moneda==='USD'&&dest.moneda==='ARS'){
+    document.getElementById('transfMontoDest').value=(monto*cotiz).toFixed(0);
+    prev.style.display='block';
+    prev.textContent=`USD ${monto} × $${cotiz.toLocaleString('es-AR')} = ${fmt(monto*cotiz)}`;
+  } else if(orig.moneda==='ARS'&&dest.moneda==='USD'){
+    document.getElementById('transfMontoDest').value=(monto/cotiz).toFixed(2);
+    prev.style.display='block';
+    prev.textContent=`${fmt(monto)} ÷ $${cotiz.toLocaleString('es-AR')} = U$D ${(monto/cotiz).toFixed(2)}`;
+  }
 }
 
 async function saveTransf(){
@@ -2501,15 +2519,15 @@ function renderDonut(){
   if(donutChartInstance) donutChartInstance.destroy();
   if(!total){
     canvas.style.display='none';
-    document.getElementById('donutLegend').innerHTML='';
+    document.getElementById('donutLegend').innerHTML=`
+      <div style="text-align:center;padding:16px 0;color:var(--text3)">
+        <span class="ms" style="font-size:32px;color:var(--border2)">donut_large</span>
+        <div style="font-size:13px;margin-top:6px">Sin movimientos<br>este mes</div>
+      </div>`;
     document.getElementById('donutTotal').textContent='';
-    document.getElementById('donutLabel').textContent='Sin datos';
-    // hide toggle tabs
-    const tabs = document.querySelectorAll('#chartTabExp,#chartTabInc');
-    tabs.forEach(t=>t.style.opacity='.4');
+    document.getElementById('donutLabel').textContent='';
     return;
   }
-  document.querySelectorAll('#chartTabExp,#chartTabInc').forEach(t=>t.style.opacity='1');
   canvas.style.display='';
 
   donutChartInstance = new Chart(canvas, {
@@ -2678,9 +2696,24 @@ function openEditCaja(id){
   const c = cajasCache.find(x=>x.id===id);
   if(!c) return;
   document.getElementById('editCajaNm').value = c.nombre;
-  document.getElementById('editCajaEmoji').value = c.emoji;
   document.getElementById('editCajaMon').value = c.moneda;
   document.getElementById('editCajaSaldo').value = c.saldo_inicial||0;
+  // build emoji picker for edit
+  selCajaEmojiVal = c.emoji || '🏦';
+  document.getElementById('editCajaEmoji').value = selCajaEmojiVal;
+  const picker = document.getElementById('editCajaEmojiPicker');
+  if(picker){
+    picker.innerHTML = CAJA_EMOJIS.map(e=>`
+      <div onclick="selEditCajaEmoji('${e}')" id="eceopt-${e}" style="width:44px;height:44px;border-radius:10px;border:2px solid ${e===selCajaEmojiVal?'var(--green)':'var(--border)'};background:${e===selCajaEmojiVal?'var(--green-bg)':'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer">${e}</div>
+    `).join('');
+  }
+  openSheet('editCajaSheet');
+}
+
+function selEditCajaEmoji(e){
+  selCajaEmojiVal = e;
+  document.getElementById('editCajaEmoji').value = e;
+  openEditCaja(editingCajaId); // rebuild picker
   openSheet('editCajaSheet');
 }
 
