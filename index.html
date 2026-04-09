@@ -1456,41 +1456,29 @@ async function vincularHogar(){
   const vinOkEl = document.getElementById('vinOk');
   if(vinErrEl) vinErrEl.style.display='none';
   if(vinOkEl) vinOkEl.style.display='none';
+
   if(codigo.length !== 6){
     if(vinErrEl){ vinErrEl.textContent='Ingresá un código de 6 caracteres.'; vinErrEl.style.display='block'; }
     return;
   }
-  // Verificar que no sea el propio código
   if(codigo === genCodigo(user.id)){
     if(vinErrEl){ vinErrEl.textContent='Ese es tu propio código. Compartíselo a tu pareja.'; vinErrEl.style.display='block'; }
     return;
   }
 
   const btn = document.getElementById('vinBtn');
-  btn.disabled = true; btn.textContent = 'Buscando...';
+  btn.disabled = true; btn.textContent = 'Vinculando...';
 
-  let match = null;
+  // Use server-side RPC function to bypass RLS
+  const { data, error } = await sb.rpc('vincular_hogar', { codigo_pareja: codigo });
 
-  // Search directly by codigo field
-  const { data: byCode, error: searchErr } = await sb
-    .from('perfiles')
-    .select('id, hogar_id, nombre, codigo')
-    .eq('codigo', codigo)
-    .neq('id', user.id)
-    .maybeSingle();
-
-  if(searchErr){
-    console.error('Search error:', searchErr);
-    if(vinErrEl){
-      vinErrEl.textContent = 'Error al buscar. Intentá de nuevo.';
-      vinErrEl.style.display = 'block';
-    }
+  if(error){
+    console.error('RPC error:', error);
+    if(vinErrEl){ vinErrEl.textContent='Error al vincular: ' + (error.message || 'intentá de nuevo.'); vinErrEl.style.display='block'; }
     btn.disabled=false; btn.textContent='Vincular hogar'; return;
   }
 
-  match = byCode;
-
-  if(!match){
+  if(data?.error === 'codigo_no_encontrado'){
     if(vinErrEl){
       vinErrEl.innerHTML = 'No se encontró ninguna cuenta con ese código.<br><small>Verificá que tu pareja esté registrada en Wally y que el código sea correcto.</small>';
       vinErrEl.style.display='block';
@@ -1498,50 +1486,21 @@ async function vincularHogar(){
     btn.disabled=false; btn.textContent='Vincular hogar'; return;
   }
 
-  btn.textContent = 'Creando hogar...';
-
-  // Crear o reutilizar hogar
-  let hId = match.hogar_id || perfil.hogar_id;
-  if(!hId){
-    const { data: hogar, error: he } = await sb.from('hogares')
-      .insert({ nombre: 'Nuestro hogar' }).select().single();
-    if(he){
-      if(vinErrEl){ vinErrEl.textContent='Error al crear el hogar. Intentá de nuevo.'; vinErrEl.style.display='block'; }
-      btn.disabled=false; btn.textContent='Vincular hogar'; return;
-    }
-    hId = hogar.id;
-  }
-
-  // Actualizar ambos perfiles
-  const miNombre = perfil.nombre || user.email?.split('@')[0] || 'Tu pareja';
-  const suNombre = match.nombre || 'Tu pareja';
-
-  const [r1, r2] = await Promise.all([
-    sb.from('perfiles').update({ hogar_id: hId, pareja_nombre: suNombre }).eq('id', user.id),
-    sb.from('perfiles').update({ hogar_id: hId, pareja_nombre: miNombre }).eq('id', match.id)
-  ]);
-
-  if(r1.error){
-    if(vinErrEl){ vinErrEl.textContent='Error al guardar. Intentá de nuevo.'; vinErrEl.style.display='block'; }
-    btn.disabled=false; btn.textContent='Vincular hogar'; return;
-  }
-
-  // Actualizar estado local
-  hogarId = hId;
-  perfil.hogar_id = hId;
-  perfil.pareja_nombre = suNombre;
+  // Success
+  hogarId = data.hogar_id;
+  perfil.hogar_id = data.hogar_id;
+  perfil.pareja_nombre = data.pareja_nombre;
 
   btn.disabled=false; btn.textContent='Vincular hogar';
   if(vinOkEl){
-    vinOkEl.innerHTML = '¡Hogar vinculado con <strong>' + suNombre + '</strong>! 🎉<br><small>Ya podés registrar gastos compartidos.</small>';
+    vinOkEl.innerHTML = '¡Hogar vinculado con <strong>' + data.pareja_nombre + '</strong>! 🎉<br><small>Ya podés registrar gastos compartidos.</small>';
     vinOkEl.style.display='block';
   }
-  toast('¡Vinculado con ' + suNombre + '! 🎉');
+  toast('¡Vinculado con ' + data.pareja_nombre + '! 🎉');
 
   await Promise.all([loadHgGastos(), loadHgPagos(), loadHgPres()]);
   updateAjustesUI();
 
-  // Refresh panel after short delay to show content
   setTimeout(() => {
     showGruposPanel('hogar');
     renderInicio();
