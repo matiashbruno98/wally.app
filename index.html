@@ -610,6 +610,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
             <div class="cotiz-pill" onclick="openSheet('cotizSheet')" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px">
               <span style="font-size:11px;font-weight:800;color:#6F7A71">USD</span><span id="cotizPill">1.350</span>
             </div>
+            <button onclick="goTab('s-ajustes')" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:6px;display:flex;align-items:center">
+              <span class="ms ms-sm">settings</span>
+            </button>
           </div>
         </div>
         <div class="month-nav" style="margin-top:12px;margin-bottom:0">
@@ -997,7 +1000,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
     <div class="tab-item" onclick="goTab('s-grupos')"><div class="tab-icon"><span class="ms tab-ms">group</span></div><div class="tab-label">Grupos</div></div>
     <div class="tab-item" onclick="goTab('s-cajas')"><div class="tab-icon"><span class="ms tab-ms">account_balance_wallet</span></div><div class="tab-label">Billeteras</div></div>
     <div class="tab-item" onclick="goTab('s-movimientos')"><div class="tab-icon"><span class="ms tab-ms">swap_horiz</span></div><div class="tab-label">Movimientos</div></div>
-    <div class="tab-item" onclick="goTab('s-ajustes')"><div class="tab-icon"><span class="ms tab-ms">settings</span></div><div class="tab-label">Ajustes</div></div>
+    <div class="tab-item" onclick="goTab('s-presupuesto')"><div class="tab-icon"><span class="ms tab-ms">donut_large</span></div><div class="tab-label">Presupuesto</div></div>
   </nav>
   <button class="fab" onclick="openSheet('txSheet')" aria-label="Nueva transacción"><span class="ms" style="font-size:28px;color:#fff;font-family:'Material Symbols Outlined'">add</span></button>
 </div>
@@ -1995,7 +1998,7 @@ function goTab(id){
   document.querySelectorAll('.screen>div').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.tab-item').forEach((t,i)=>{
-    const ids=['s-inicio','s-grupos','s-cajas','s-movimientos','s-ajustes'];
+    const ids=['s-inicio','s-grupos','s-cajas','s-movimientos','s-presupuesto'];
     t.classList.toggle('active',ids[i]===id);
   });
   currentTab = id;
