@@ -62,6 +62,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 [data-theme="dark"] .deuda-box{background:var(--blue-bg);border-color:#1E3A5F}
 [data-theme="dark"] .import-zone{background:var(--bg3);border-color:var(--border2)}
 [data-theme="dark"] .auth-card{box-shadow:0 4px 24px rgba(0,0,0,.4)}
+[data-theme="dark"] .topbar{background:rgba(28,31,32,.96);border-bottom-color:var(--border)}
+[data-theme="dark"] .tabbar{background:rgba(28,31,32,.96);border-top-color:var(--border)}
+[data-theme="dark"] .sheet{background:var(--bg2)}
+[data-theme="dark"] .sheet-overlay{background:rgba(0,0,0,.7)}
+[data-theme="dark"] .cotiz-pill{background:var(--bg3);border-color:var(--border);color:var(--text)}
+[data-theme="dark"] .month-btn{background:var(--bg3);border-color:var(--border);color:var(--text)}
+[data-theme="dark"] .bsub{box-shadow:0 4px 12px rgba(76,175,120,.2)}
+[data-theme="dark"] .auth-screen{background:var(--bg)}
+[data-theme="dark"] .auth-card{background:var(--bg2);border-color:var(--border)}
+[data-theme="dark"] .auth-inp{background:var(--bg3);border-color:var(--border);color:var(--text)}
+[data-theme="dark"] .set-row:active{background:var(--bg3)}
+[data-theme="dark"] .itab.active{background:var(--bg3);box-shadow:none}
 
 /* ── AUTH SCREEN ── */
 .auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg)}
@@ -101,13 +113,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .screen>div.active{display:block}
 
 /* ── TOPBAR ── */
-.topbar{padding:52px 20px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06)}
+.topbar{padding:52px 20px 14px;background:var(--bg2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .topbar-row{display:flex;align-items:center;justify-content:space-between}
 .topbar h1{font-size:22px;font-weight:800;color:#191C1D;letter-spacing:-.3px}
 .topbar .sub{font-size:13px;color:var(--text3);margin-top:2px}
 
 /* ── TAB BAR ── */
-.tabbar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);padding:8px 0 calc(var(--safe-bottom) + 4px);display:flex;z-index:100}
+.tabbar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);opacity:.97;padding:8px 0 calc(var(--safe-bottom) + 4px);display:flex;z-index:100}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0}
 .tab-icon{font-size:22px;line-height:1}
 .tab-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:none}
@@ -202,11 +214,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 
 /* ── MONTH NAV ── */
 .month-nav{display:flex;align-items:center;gap:12px;padding:0 16px;margin-bottom:14px}
-.month-btn{background:#F1F3F4;border:1px solid #E1E3E4;color:#191C1D;width:32px;height:32px;border-radius:var(--rs);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700}
+.month-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:var(--rs);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700}
 .month-lbl{flex:1;text-align:center;font-size:14px;font-weight:600}
 
 /* ── COTIZ PILL ── */
-.cotiz-pill{display:flex;align-items:center;gap:5px;background:#F1F3F4;border:1px solid #E1E3E4;border-radius:20px;padding:7px 13px;font-size:12px;color:#191C1D;cursor:pointer;font-weight:700}
+.cotiz-pill{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:7px 13px;font-size:12px;color:var(--text);cursor:pointer;font-weight:700}
 .cotiz-pill span{color:var(--green-dim);font-weight:700}
 
 /* ── RES TABLE ── */
@@ -217,15 +229,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 /* ── SHEET ── */
 .sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
-.sheet{position:fixed;bottom:0;left:0;right:0;background:#FFFFFF;border-radius:24px 24px 0 0;padding:0 0 calc(var(--safe-bottom)+8px);z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);max-height:92dvh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.1)}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-radius:24px 24px 0 0;padding:0 0 calc(var(--safe-bottom)+8px);z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);max-height:92dvh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.1)}
 .sheet-overlay.open .sheet{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1)}
 .sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
 .sheet-title{font-size:18px;font-weight:700;padding:14px 20px 4px;color:var(--text)}
 .sheet-body{padding:8px 20px 16px}
 .fg{margin-bottom:14px}
 .flbl{font-size:11px;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;display:block;font-weight:500}
-.finp,.fsel{width:100%;background:#F1F3F4;border:1px solid #E1E3E4;border-radius:var(--rs);color:#191C1D;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;padding:12px 14px;outline:none;transition:border-color .12s;-webkit-appearance:none}
-.finp:focus,.fsel:focus{border-color:#196C43;background:#FFFFFF}
+.finp,.fsel{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;padding:12px 14px;outline:none;transition:border-color .12s;-webkit-appearance:none}
+.finp:focus,.fsel:focus{border-color:var(--green);background:var(--bg2)}
 .fsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .fsel option{background:var(--bg2)}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -242,7 +254,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .quien-btn.sel-par{background:var(--blue-bg);border-color:#BFDBFE;color:var(--blue);font-weight:600}
 
 /* ── AJUSTES ── */
-.set-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #E1E3E4;cursor:pointer}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
 .set-row:last-child{border-bottom:none}
 .set-row:active{background:var(--bg3)}
 .set-label{font-size:14px;font-weight:500}
@@ -394,7 +406,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 </svg>
 
 <!-- ══ WELCOME SCREEN ══ -->
-<div id="welcomeScreen" style="min-height:100vh;height:100vh;background:#F8F9FA;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;position:fixed;inset:0;z-index:10">
+<div id="welcomeScreen" style="min-height:100vh;height:100vh;background:var(--bg);display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;position:fixed;inset:0;z-index:10">
 
   <!-- NAV -->
   <nav style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;position:sticky;top:0;background:rgba(248,249,250,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:10;border-bottom:1px solid rgba(0,0,0,.06)">
@@ -617,18 +629,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
               <span class="ms ms-sm" id="themeBtnIcon">light_mode</span>
             </button>
             <div class="cotiz-pill" onclick="openSheet('cotizSheet')" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px">
-              <span class="ms ms-sm">attach_money</span><span id="cotizPill">1.350</span>
+              <span style="font-size:11px;font-weight:800;color:#6F7A71">USD</span><span id="cotizPill">1.350</span>
             </div>
           </div>
         </div>
         <div class="month-nav" style="margin-top:12px;margin-bottom:0">
           <button class="month-btn" onclick="chMon(-1)">‹</button>
-          <span class="month-lbl" id="inicioMesLbl" style="font-weight:700"></span>
+          <span class="month-lbl" id="inicioMesLbl" style="font-weight:700;font-size:13px;color:var(--text2)"></span>
           <button class="month-btn" onclick="chMon(1)">›</button>
         </div>
       </div>
       <div style="height:4px"></div>
-      <div style="font-size:11px;color:var(--text2);letter-spacing:.06em;font-weight:700;padding:0 16px;margin-bottom:10px">Tu economía · <span id="mesMostrado"></span></div>
       <div class="metrics-scroll" id="metricsScroll" style="min-height:90px"></div>
       <div class="sect">
         <div class="sect-title">Últimos movimientos <span class="sect-link" onclick="goTab('s-movimientos')">Ver todos</span></div>
@@ -650,21 +661,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
               </div>
             </div>
             <div id="donutLegend" style="flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sect" id="resumenMensualSect" style="display:none">
-        <div class="sect-title">Resumen de <span id="resumenMesNombre"></span></div>
-        <div style="margin:0 16px">
-          <div class="card" style="position:relative;overflow:hidden">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#196C43;border-radius:4px 0 0 4px"></div>
-            <div style="padding-left:8px">
-              <div id="resumenTexto" style="font-size:14px;color:#191C1D;line-height:1.65;font-weight:500"></div>
-              <div id="resumenLoading" style="font-size:13px;color:var(--text3);display:none">
-                <span class="spinner" style="width:16px;height:16px;margin:0;display:inline-block;vertical-align:middle;margin-right:6px"></span>Generando resumen...
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -949,14 +945,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 
       <!-- Perfil -->
       <div style="margin:0 16px">
-        <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px">
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer" onclick="openSheet('editNombreSheet')">
           <div style="display:flex;align-items:center;gap:14px">
             <div style="width:52px;height:52px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;border:2px solid var(--border)">
               <span class="ms" style="color:var(--green);font-size:26px">person</span>
             </div>
             <div>
               <div style="font-size:16px;font-weight:800;color:var(--text)" id="ajustesNombre">—</div>
-              <div style="font-size:13px;color:var(--text3)">Cuenta Personal</div>
+              <div style="font-size:13px;color:var(--text3)">Cuenta Personal · tocar para editar</div>
             </div>
           </div>
           <span class="ms ms-sm" style="color:var(--text3)">chevron_right</span>
@@ -1075,7 +1071,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Nueva transacción</div>
   <div class="sheet-body">
     <div class="ttog"><div class="tbtn ai" id="ti" onclick="setTT('income')">▲ Ingreso</div><div class="tbtn" id="te" onclick="setTT('expense')">▼ Egreso</div></div>
-    <div class="fg"><label class="flbl">Descripción</label><div style="position:relative"><input class="finp" id="fdesc" placeholder="Ej: Café, Supermercado..." oninput="debounceCategorize()"><span id="catLoadingIcon" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);display:none">⏳</span></div></div>
+    <div class="fg"><label class="flbl">Descripción</label><div style="position:relative"><input class="finp" id="fdesc" placeholder="Ej: Café, Supermercado..."><span id="catLoadingIcon" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);display:none">⏳</span></div></div>
     <div class="frow">
       <div class="fg"><label class="flbl">Monto</label><input class="finp" id="famt" type="number" inputmode="decimal" placeholder="0" oninput="updConv('cvprev','famt','fcur')"></div>
       <div class="fg"><label class="flbl">Moneda</label><select class="fsel" id="fcur" onchange="updConv('cvprev','famt','fcur')"><option value="ARS">$ Pesos</option><option value="USD">USD</option></select></div>
@@ -1171,6 +1167,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('cotizSheet')">Cancelar</button><button class="bsub" onclick="saveCotiz()">Guardar</button></div></div>
 </div>
+<!-- EDIT NOMBRE -->
+<div class="sheet-overlay" id="editNombreSheet" onclick="closeSheetOut(event,'editNombreSheet')">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Tu nombre</div>
+  <div class="sheet-body">
+    <div class="fg"><label class="flbl">Nombre</label><input class="finp" id="editNombreInp" placeholder="Tu nombre" type="text" autocomplete="name"></div>
+    <div style="font-size:12px;color:var(--text3);margin-top:-8px">Este nombre aparece en el saludo y en el hogar compartido.</div>
+  </div>
+  <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('editNombreSheet')">Cancelar</button><button class="bsub" onclick="saveNombre()">Guardar</button></div></div>
+</div>
+
 <!-- PAREJA -->
 <div class="sheet-overlay" id="parejaSheet" onclick="closeSheetOut(event,'parejaSheet')">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Nombre de tu pareja</div>
@@ -1701,12 +1707,12 @@ function renderTab(id){
 
 function updateMonthLabels(){
   const ms = MONTHS[curMonth] + ' ' + curYear;
-  ['hogarMesLbl','movMesLbl','presMesLbl','inicioMesLbl'].forEach(id => {
+  ['hogarMesLbl','movMesLbl','presMesLbl'].forEach(id => {
     const e = document.getElementById(id);
     if(e) e.textContent = ms;
   });
-  const mm = document.getElementById('mesMostrado');
-  if(mm) mm.textContent = MONTHS[curMonth];
+  const inicioLbl = document.getElementById('inicioMesLbl');
+  if(inicioLbl) inicioLbl.textContent = 'Tu economía · ' + MONTHS[curMonth];
 }
 
 function calcSaldo(){
@@ -1769,8 +1775,7 @@ function renderInicio(){
 
   // donut chart (render after short delay to ensure canvas is ready)
   setTimeout(renderDonut, 100);
-  // AI monthly summary
-  setTimeout(generarResumenMensual, 800);
+
 
   if(hogarId){
     document.getElementById('hogarCardSect').style.display = '';
@@ -2115,6 +2120,10 @@ function openSheet(id){
     document.getElementById('cotizInp').value = cotiz;
     document.getElementById('cotizPrev').textContent = cotiz.toLocaleString('es-AR');
     document.getElementById('cotizInp').select();
+  }
+  if(id==='editNombreSheet'){
+    document.getElementById('editNombreInp').value = perfil?.nombre || '';
+    setTimeout(()=>document.getElementById('editNombreInp').focus(), 300);
   }
   if(id==='parejaSheet') document.getElementById('parejaInp').value = perfil?.pareja_nombre || '';
   if(id==='transfSheet'){
@@ -2525,6 +2534,18 @@ async function saveCotiz(){
 }
 
 // ══ PAREJA ══
+async function saveNombre(){
+  const n = document.getElementById('editNombreInp').value.trim();
+  if(!n) return;
+  perfil.nombre = n;
+  await sb.from('perfiles').update({ nombre: n }).eq('id', user.id);
+  closeSheet('editNombreSheet');
+  updateAjustesUI();
+  renderInicio();
+  renderAjustes();
+  toast('Nombre actualizado ✓');
+}
+
 async function savePareja(){
   const n=document.getElementById('parejaInp').value.trim();
   if(!n) return;
@@ -2537,7 +2558,7 @@ async function savePareja(){
 }
 
 // ══ CATEGORÍAS ══
-function setTT(t){ txType=t; document.getElementById('ti').className='tbtn'+(t==='income'?' ai':''); document.getElementById('te').className='tbtn'+(t==='expense'?' ae':''); popSel('fcat', cats.filter(c=>c.tipo==='both'||c.tipo===t)); const desc=document.getElementById('fdesc')?.value?.trim(); if(desc && desc.length>=3) autoCategorize(); }
+function setTT(t){ txType=t; document.getElementById('ti').className='tbtn'+(t==='income'?' ai':''); document.getElementById('te').className='tbtn'+(t==='expense'?' ae':''); popSel('fcat', cats.filter(c=>c.tipo==='both'||c.tipo===t)); }
 function editCatFn(id){ editCatId=id; const c=cats.find(x=>x.id===id); if(c){ document.getElementById('cname').value=c.nombre; selEmoji=c.emoji; selColor=c.color; selCType=c.tipo; document.getElementById('catTitle').textContent='Editar categoría'; } openSheet('catSheet'); }
 function buildEP(){ document.getElementById('epicker').innerHTML=EMOJIS.map(e=>`<div class="eopt${e===selEmoji?' sel':''}" onclick="selE('${e}')">${e}</div>`).join(''); }
 function selE(e){ selEmoji=e; document.querySelectorAll('.eopt').forEach(el=>el.classList.toggle('sel',el.textContent===e)); }
@@ -3345,122 +3366,6 @@ function goToAuth(tab){
       : document.getElementById('loginEmail');
     if(inp) inp.focus();
   }, 250);
-}
-
-// ══ IA — CATEGORIZACIÓN AUTOMÁTICA ══
-let categorizeTimer = null;
-
-function debounceCategorize(){
-  clearTimeout(categorizeTimer);
-  categorizeTimer = setTimeout(autoCategorize, 600);
-}
-
-async function autoCategorize(){
-  const desc = document.getElementById('fdesc')?.value?.trim();
-  if(!desc || desc.length < 3) return;
-
-  const icon = document.getElementById('catLoadingIcon');
-  if(icon) icon.style.display = 'block';
-
-  try {
-    const filteredCats = cats.filter(c => c.tipo === 'both' || c.tipo === txType);
-    const res = await fetch('/api/categorize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        descripcion: desc,
-        categorias: filteredCats.map(c => ({ id: c.id, nombre: c.nombre, tipo: c.tipo }))
-      })
-    });
-    const data = await res.json();
-    if(data.categoria_id){
-      const sel = document.getElementById('fcat');
-      if(sel) {
-        sel.value = data.categoria_id;
-        // visual feedback
-        sel.style.borderColor = '#196C43';
-        setTimeout(() => { sel.style.borderColor = ''; }, 1500);
-      }
-    }
-  } catch(e) {
-    console.log('Categorize error:', e);
-  } finally {
-    if(icon) icon.style.display = 'none';
-  }
-}
-
-// ══ IA — RESUMEN MENSUAL ══
-let resumenGenerado = {};
-
-async function generarResumenMensual(){
-  // Show for previous month (first 7 days of current month)
-  // or current month if specifically requested
-  const hoy = new Date();
-  const esPrimeraSemana = hoy.getDate() <= 7;
-
-  let mesSummary = curMonth;
-  let anioSummary = curYear;
-
-  if(esPrimeraSemana && curMonth === hoy.getMonth() && curYear === hoy.getFullYear()){
-    // Show previous month summary
-    mesSummary = hoy.getMonth() - 1;
-    anioSummary = hoy.getFullYear();
-    if(mesSummary < 0){ mesSummary = 11; anioSummary--; }
-  }
-
-  const cacheKey = `${mesSummary}-${anioSummary}`;
-  const sect = document.getElementById('resumenMensualSect');
-  const textoEl = document.getElementById('resumenTexto');
-  const loadingEl = document.getElementById('resumenLoading');
-  const mesNombreEl = document.getElementById('resumenMesNombre');
-
-  // Get transactions for that month
-  const txsMes = txsCache.filter(t => {
-    if(!t.fecha) return false;
-    const d = new Date(t.fecha + 'T00:00:00');
-    return d.getMonth() === mesSummary && d.getFullYear() === anioSummary;
-  });
-
-  if(!txsMes.length) return; // no data, don't show
-
-  sect.style.display = '';
-  if(mesNombreEl) mesNombreEl.textContent = MONTHS[mesSummary];
-
-  // Use cached if available
-  if(resumenGenerado[cacheKey]){
-    textoEl.textContent = resumenGenerado[cacheKey];
-    return;
-  }
-
-  // Show loading
-  textoEl.style.display = 'none';
-  loadingEl.style.display = 'block';
-
-  try {
-    const res = await fetch('/api/summary', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        transacciones: txsMes,
-        mes: mesSummary,
-        anio: anioSummary,
-        nombre: perfil?.nombre || 'vos',
-        categorias: cats.map(c => ({ id: c.id, nombre: c.nombre }))
-      })
-    });
-    const data = await res.json();
-    if(data.resumen){
-      resumenGenerado[cacheKey] = data.resumen;
-      textoEl.textContent = data.resumen;
-      textoEl.style.display = 'block';
-    }
-  } catch(e) {
-    console.log('Summary error:', e);
-    sect.style.display = 'none';
-  } finally {
-    loadingEl.style.display = 'none';
-    textoEl.style.display = 'block';
-  }
 }
 
 // ══ ARRANCAR ══
