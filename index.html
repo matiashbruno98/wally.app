@@ -1857,18 +1857,22 @@ function fTx(f,el){
 // ── HOGAR ──
 function renderHogar(){ renderGrupos(); }
 function renderHogarContent(){
-  const tienePareja = !!(perfil?.pareja_nombre);
+  const hogarVinculado = !!(hogarId || perfil?.hogar_id);
+  if(!hogarId && perfil?.hogar_id) hogarId = perfil.hogar_id;
+
   const vinDiv = document.getElementById('hogarVinculacion');
   const conDiv = document.getElementById('hogarContenido');
   const addBtn = document.getElementById('hgAddBtn');
 
-  if(!tienePareja){
+  if(!hogarVinculado){
     vinDiv.style.display = 'block';
     conDiv.style.display = 'none';
     if(addBtn) addBtn.style.display = 'none';
-    // show user's own code
     const codigoEl = document.getElementById('miCodigo');
-    if(codigoEl) codigoEl.textContent = genCodigo(user.id);
+    if(codigoEl && user?.id){
+      codigoEl.textContent = genCodigo(user.id);
+      codigoEl.style.letterSpacing = '6px';
+    }
     return;
   }
 
@@ -2724,25 +2728,32 @@ function showGruposPanel(panel){
   }
 
   if(panel==='hogar'){
-    const tienePareja = !!(perfil?.pareja_nombre);
+    // hogarId is the real condition — pareja_nombre alone doesn't mean hogar exists
+    const hogarVinculado = !!(hogarId || perfil?.hogar_id);
+    if(hogarId && !perfil?.hogar_id) perfil.hogar_id = hogarId;
+    if(!hogarId && perfil?.hogar_id) hogarId = perfil.hogar_id;
+
     const vinDiv = document.getElementById('hogarVinculacion');
     const conDiv = document.getElementById('hogarContenido');
     const addBtn = document.getElementById('hgAddBtn');
-    if(!tienePareja){
+
+    if(!hogarVinculado){
+      // Show vinculacion panel with code
       vinDiv.style.display='block'; conDiv.style.display='none';
       if(addBtn) addBtn.style.display='none';
-      // set code immediately from user.id
       const codigoEl=document.getElementById('miCodigo');
       if(codigoEl && user?.id){
         const code = genCodigo(user.id);
         codigoEl.textContent = code;
         codigoEl.style.letterSpacing = '6px';
       }
+      // Pre-fill pareja nombre if already set
+      const parejaInpVin = document.getElementById('codigoPareja');
+      if(parejaInpVin) parejaInpVin.value = '';
     } else {
+      // Show hogar content
       vinDiv.style.display='none'; conDiv.style.display='block';
       if(addBtn) addBtn.style.display='flex';
-      // ensure hogarId is fresh from perfil
-      if(!hogarId && perfil?.hogar_id) hogarId = perfil.hogar_id;
       renderHogarContent();
     }
   }
