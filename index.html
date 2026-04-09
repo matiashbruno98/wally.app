@@ -262,7 +262,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 
 /* ── CAT GRID ── */
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.cat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:10px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.cat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
 .cat-em{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .cat-nm{font-size:11px;color:var(--text);text-align:center;line-height:1.2;font-weight:500}
 .cat-tp{font-size:9px;font-weight:600;margin-top:1px}
@@ -277,7 +277,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .copt{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent}
 .copt.sel{border-color:var(--text)}
 .tchips{display:flex;gap:7px}
-.tchip{flex:1;padding:10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;transition:all .12s;font-weight:500}
+.tchip{flex:1;padding:12px 10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:14px;cursor:pointer;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;transition:all .12s;font-weight:500}
 .tchip.sb{background:var(--bg4);border-color:var(--border2);color:var(--text);font-weight:600}
 .tchip.si{background:var(--green-bg);border-color:#B8E0C8;color:var(--green-dim);font-weight:700}
 .tchip.se{background:var(--red-bg);border-color:#FECACA;color:#DC2626;font-weight:600}
@@ -709,11 +709,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <!-- PANEL HOGAR -->
       <div id="panelHogar" style="display:none">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)">
-          <button onclick="showGruposPanel('home')" style="background:none;border:none;cursor:pointer;color:var(--green-dim);font-size:14px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:4px;padding:0">
-            <span class="ms ms-sm">chevron_left</span> Grupos
+          <button onclick="showGruposPanel('home')" style="background:none;border:none;cursor:pointer;color:var(--green);font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:2px;padding:0">
+            <span class="ms ms-sm">chevron_left</span> Hogar
           </button>
-          <span style="color:var(--text3);font-size:14px">/</span>
-          <span style="font-size:14px;font-weight:600;color:var(--text)">Hogar</span>
           <button onclick="openSheet('hgSheet')" id="hgAddBtn" style="margin-left:auto;background:var(--green);color:#fff;border:none;border-radius:var(--rs);padding:7px 14px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px"><span class="ms ms-sm" style="font-size:15px">add</span> Gasto</button>
         </div>
 
@@ -775,11 +773,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <!-- PANEL GRUPOS EVENTUALES -->
       <div id="panelEventuales" style="display:none">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)">
-          <button onclick="showGruposPanel('home')" style="background:none;border:none;cursor:pointer;color:var(--green-dim);font-size:14px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:4px;padding:0">
-            <span class="ms ms-sm">chevron_left</span> Grupos
+          <button onclick="showGruposPanel('home')" style="background:none;border:none;cursor:pointer;color:var(--green);font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:2px;padding:0">
+            <span class="ms ms-sm">chevron_left</span> Eventuales
           </button>
-          <span style="color:var(--text3);font-size:14px">/</span>
-          <span style="font-size:14px;font-weight:600;color:var(--text)">Eventuales</span>
           <button onclick="openSheet('grupoNuevoSheet')" style="margin-left:auto;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);padding:7px 14px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px"><span class="ms ms-sm" style="font-size:15px">add</span> Crear</button>
         </div>
         <div id="gruposList" style="padding:16px 0"></div>
@@ -852,7 +848,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div class="topbar">
         <div class="topbar-row">
           <div><h1>Presupuesto</h1></div>
-          <button onclick="togglePresMode()" id="presModeBtn" style="background:#F1F3F4;border:1px solid #E1E3E4;color:#191C1D;border-radius:var(--rs);padding:7px 14px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px">
+          <button onclick="togglePresMode()" id="presModeBtn" style="background:var(--green);border:none;color:white;border-radius:var(--rs);padding:8px 16px;font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;box-shadow:0 2px 8px rgba(25,108,67,.25)">
             <span class="ms ms-sm">edit</span> Editar
           </button>
         </div>
@@ -1008,7 +1004,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   <path d="M33 75 Q47 84 63 75" fill="none" stroke="var(--text3)" stroke-width="3" stroke-linecap="round"/>
 </svg>
         </div>
-        <div style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.1em;text-transform:uppercase">Wally v1.0</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text3)">Wally · v1.0</div>
       </div>
       <div style="padding:0 20px 32px">
         <button onclick="doLogout()" style="width:100%;background:none;border:none;color:var(--red);font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;padding:12px">Sign Out</button>
@@ -1047,6 +1043,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div class="fg"><label class="flbl">Fecha</label><input class="finp" id="fdate" type="date"></div>
     </div>
     <div class="fg"><label class="flbl">Caja (opcional)</label><select class="fsel" id="fcaja"><option value="">Sin asignar</option></select></div>
+    <div class="fg"><label class="flbl">Nota (opcional)</label><input class="finp" id="fnota" placeholder="Detalles adicionales..."></div>
     <!-- Compartido toggle -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg3);border-radius:var(--rs);margin-bottom:2px" id="compartidoRow">
       <div>
@@ -1276,6 +1273,52 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('grupoGastoSheet')">Cancelar</button><button class="bsub" onclick="saveGrupoGasto()">Agregar</button></div></div>
 </div>
+<!-- CONFIRM SHEET -->
+<div class="sheet-overlay" id="confirmSheet">
+  <div class="sheet" style="padding-bottom:8px">
+    <div class="sheet-handle"></div>
+    <div style="padding:20px 20px 8px;text-align:center">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <span class="ms" style="color:var(--red);font-size:26px">delete</span>
+      </div>
+      <div style="font-size:17px;font-weight:800;color:var(--text);margin-bottom:8px" id="confirmTitle">¿Eliminar?</div>
+      <div style="font-size:14px;color:var(--text3);line-height:1.5" id="confirmMsg">Esta acción no se puede deshacer.</div>
+    </div>
+    <div class="sheet-actions" style="padding:8px 20px 16px">
+      <button class="bcanc" onclick="closeSheet('confirmSheet');confirmReject()">Cancelar</button>
+      <button style="flex:2;background:var(--red);color:#fff;border:none;padding:13px;border-radius:var(--rs);font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="closeSheet('confirmSheet');confirmResolve()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TRANSF -->
+<div class="sheet-overlay" id="editTransfSheet" onclick="closeSheetOut(event,'editTransfSheet')">
+  <div class="sheet"><div class="sheet-handle"></div>
+  <div class="sheet-title">Editar transferencia</div>
+  <div class="sheet-body">
+    <div class="frow">
+      <div class="fg"><label class="flbl">Desde</label><select class="fsel" id="etransfOrigen"></select></div>
+      <div class="fg"><label class="flbl">Hacia</label><select class="fsel" id="etransfDestino"></select></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flbl">Monto origen</label><input class="finp" id="etransfMontoOrig" type="number" inputmode="decimal" placeholder="0"></div>
+      <div class="fg"><label class="flbl">Monto destino</label><input class="finp" id="etransfMontoDest" type="number" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="flbl">Descripción</label><input class="finp" id="etransfDesc" placeholder="Opcional"></div>
+      <div class="fg"><label class="flbl">Fecha</label><input class="finp" id="etransfFecha" type="date"></div>
+    </div>
+    <div style="margin-top:4px">
+      <button onclick="deleteTransf()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Eliminar transferencia</button>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="bcanc" onclick="closeSheet('editTransfSheet')">Cancelar</button>
+    <button class="bsub" onclick="saveEditTransf()">Guardar cambios</button>
+  </div>
+  </div>
+</div>
+
 <!-- CAT BULK -->
 <div class="sheet-overlay" id="catBulkSheet" onclick="closeSheetOut(event,'catBulkSheet')">
   <div class="sheet"><div class="sheet-handle"></div>
@@ -1956,7 +1999,11 @@ function renderPresupuesto(){
       <div class="btrack"><div class="bfill" style="width:${pct.toFixed(1)}%;background:${bc}"></div></div>
       <div class="proy-footer"><span style="color:${sc};font-weight:500">${pct.toFixed(0)}%</span><span style="color:var(--text3)">${over?'⚠ excedido':'disp: '+fmt(p.monto_ars-gast)}</span></div>
     </div>`;
-  }).join('') : '<div class="empty">Sin presupuesto para este mes.<br>Usá ＋ Agregar para empezar.</div>';
+  }).join('') : '<div class="empty" style="padding:32px 20px;text-align:center">' +
+      '<span class="ms" style="font-size:44px;color:var(--border2)">donut_large</span>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--text2);margin-top:10px">Sin presupuesto este mes</div>' +
+      '<div style="font-size:13px;color:var(--text3);margin-top:6px;line-height:1.5">Tocá <strong>Editar</strong> arriba a la derecha<br>para configurar tu presupuesto mensual</div>' +
+      '</div>';
 
   const inc = monTxs().filter(t=>t.tipo==='income').reduce((s,t)=>s+t.monto_ars,0);
   const ahorroEsp = inc - totPres;
@@ -2041,7 +2088,7 @@ function openSheet(id){
   if(id==='txSheet'){
     document.getElementById('fdate').value = new Date().toISOString().split('T')[0];
     popSel('fcat', cats.filter(c=>c.tipo==='both'||c.tipo===txType));
-    document.getElementById('fdesc').value=''; document.getElementById('famt').value='';
+    document.getElementById('fdesc').value=''; document.getElementById('famt').value=''; if(document.getElementById('fnota')) document.getElementById('fnota').value='';
     document.getElementById('cvprev').style.display='none';
     const cajaOpts = cajasCache.map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('');
     document.getElementById('fcaja').innerHTML='<option value="">Sin asignar</option>'+cajaOpts;
@@ -2173,6 +2220,7 @@ async function saveTx(){
   const btn = document.getElementById('txBtn');
   btn.disabled=true; btn.textContent='Guardando...';
   const cajaId = document.getElementById('fcaja').value || null;
+  const nota = document.getElementById('fnota')?.value?.trim() || null;
   const esCompartido = document.getElementById('fcompartido').checked;
 
   const {error} = await sb.from('transacciones').insert({
@@ -2727,12 +2775,17 @@ function renderCajas(){
     const d = new Date(t.fecha+'T00:00:00');
     const ds = d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3);
     const fmtMonto = (m,mon) => mon==='USD' ? 'U$D '+m.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}) : fmt(m);
-    return `<div class="transf-item">
+    return `<div class="transf-item" onclick="openEditTransf('${t.id}')" style="cursor:pointer">
       <div style="font-size:11px;color:var(--text3);min-width:44px">${ds}</div>
       <div style="flex:1">${orig?.emoji||'?'} <strong>${orig?.nombre||'?'}</strong> → ${dest?.emoji||'?'} <strong>${dest?.nombre||'?'}</strong>${t.descripcion?' · <span style="color:var(--text3)">'+t.descripcion+'</span>':''}</div>
       <div style="font-size:13px;font-weight:600;color:var(--text2)">${fmtMonto(t.monto_origen,t.moneda_origen)}</div>
+      <span class="ms ms-sm" style="color:var(--text3);margin-left:6px">chevron_right</span>
     </div>`;
-  }).join('') : '<div class="empty" style="padding:20px">Sin transferencias registradas</div>';
+  }).join('') : '<div style="text-align:center;padding:28px 20px">' +
+      '<span class="ms" style="font-size:36px;color:var(--border2)">swap_horiz</span>' +
+      '<div style="font-size:14px;font-weight:600;color:var(--text2);margin-top:8px">Sin transferencias</div>' +
+      '<div style="font-size:12px;color:var(--text3);margin-top:4px">Usá el botón de arriba para mover plata entre cuentas</div>' +
+      '</div>';
 
   // grupos
   renderGrupos();
@@ -2928,6 +2981,70 @@ function calcTransfDestino(){
     prev.style.display='block';
     prev.textContent=`${fmt(monto)} ÷ $${cotiz.toLocaleString('es-AR')} = U$D ${(monto/cotiz).toFixed(2)}`;
   }
+}
+
+// ══ EDIT TRANSFERENCIA ══
+let editingTransfId = null;
+
+function openEditTransf(id){
+  editingTransfId = id;
+  const t = transfCache.find(x => x.id === id);
+  if(!t) return;
+
+  popCajaSel('etransfOrigen');
+  popCajaSel('etransfDestino');
+
+  setTimeout(() => {
+    document.getElementById('etransfOrigen').value = t.caja_origen_id;
+    document.getElementById('etransfDestino').value = t.caja_destino_id;
+  }, 50);
+
+  document.getElementById('etransfMontoOrig').value = t.monto_origen;
+  document.getElementById('etransfMontoDest').value = t.monto_destino;
+  document.getElementById('etransfDesc').value = t.descripcion || '';
+  document.getElementById('etransfFecha').value = t.fecha;
+  openSheet('editTransfSheet');
+}
+
+async function saveEditTransf(){
+  if(!editingTransfId) return;
+  const origId = document.getElementById('etransfOrigen').value;
+  const destId = document.getElementById('etransfDestino').value;
+  const montoOrig = parseFloat(document.getElementById('etransfMontoOrig').value);
+  const montoDest = parseFloat(document.getElementById('etransfMontoDest').value) || montoOrig;
+  const desc = document.getElementById('etransfDesc').value.trim();
+  const fecha = document.getElementById('etransfFecha').value;
+
+  if(!origId || !destId || !montoOrig || !fecha) return;
+
+  const orig = cajasCache.find(c => c.id === origId);
+  const dest = cajasCache.find(c => c.id === destId);
+
+  await sb.from('transferencias').update({
+    caja_origen_id: origId,
+    caja_destino_id: destId,
+    monto_origen: montoOrig,
+    monto_destino: montoDest,
+    moneda_origen: orig?.moneda || 'ARS',
+    moneda_destino: dest?.moneda || 'ARS',
+    descripcion: desc,
+    fecha
+  }).eq('id', editingTransfId);
+
+  closeSheet('editTransfSheet');
+  await loadTransferencias();
+  renderCajas();
+  toast('Transferencia actualizada ✓');
+}
+
+async function deleteTransf(){
+  if(!editingTransfId) return;
+  try { await showConfirm('¿Eliminar transferencia?', 'Se borrará permanentemente.'); } catch{ return; }
+  await sb.from('transferencias').delete().eq('id', editingTransfId);
+  closeSheet('editTransfSheet');
+  await loadTransferencias();
+  renderCajas();
+  toast('Transferencia eliminada');
 }
 
 async function saveTransf(){
@@ -3255,7 +3372,7 @@ async function saveEditTx(){
 
 async function deleteTx(){
   if(!editingTxId) return;
-  if(!confirm('¿Eliminar esta transacción?')) return;
+  try { await showConfirm('¿Eliminar transacción?', 'Se borrará permanentemente de tus movimientos.'); } catch{ return; }
   await sb.from('transacciones').delete().eq('id', editingTxId);
   closeSheet('editTxSheet');
   await loadTxs();
@@ -3308,7 +3425,7 @@ async function saveEditCaja(){
 
 async function deleteCaja(){
   if(!editingCajaId) return;
-  if(!confirm('¿Eliminar esta caja? Los movimientos asociados no se eliminarán.')) return;
+  try { await showConfirm('¿Eliminar caja?', 'Los movimientos asociados no se eliminarán.'); } catch{ return; }
   await sb.from('cajas').update({activa:false}).eq('id',editingCajaId);
   closeSheet('editCajaSheet');
   await loadCajas();
@@ -3372,6 +3489,20 @@ function goToAuth(tab){
       : document.getElementById('loginEmail');
     if(inp) inp.focus();
   }, 250);
+}
+
+// ══ CONFIRM DIALOG ══
+let confirmResolve = () => {};
+let confirmReject = () => {};
+
+function showConfirm(title, msg){
+  return new Promise((resolve, reject) => {
+    confirmResolve = resolve;
+    confirmReject = reject;
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMsg').textContent = msg || 'Esta acción no se puede deshacer.';
+    openSheet('confirmSheet');
+  });
 }
 
 // ══ ARRANCAR ══
