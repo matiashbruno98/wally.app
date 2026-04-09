@@ -76,7 +76,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 [data-theme="dark"] .itab.active{background:var(--bg3);box-shadow:none}
 
 /* ── AUTH SCREEN ── */
-.auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg)}
+.auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg);position:fixed;inset:0;z-index:10;overflow-y:auto}
 .auth-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:6px}
 .auth-logo span{color:var(--green-dim)}
 .auth-sub{font-size:14px;color:var(--text3);margin-bottom:40px;text-align:center}
@@ -95,7 +95,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .auth-ok{background:var(--green-bg);border:1px solid #BBF7D0;border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--green-dim);margin-bottom:14px;display:none}
 
 /* ── HOGAR LINK SCREEN ── */
-.hogar-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg)}
+.hogar-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg);position:fixed;inset:0;z-index:10}
 .hogar-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
 .hogar-title{font-size:20px;font-weight:700;margin-bottom:6px}
 .hogar-sub{font-size:14px;color:var(--text3);margin-bottom:24px;line-height:1.5}
@@ -107,7 +107,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .skip-btn{width:100%;background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:12px;font-family:'Plus Jakarta Sans',sans-serif;margin-top:8px}
 
 /* ── APP LAYOUT ── */
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh;display:none}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;display:none;background:var(--bg)}
 .screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 calc(var(--tabbar) + var(--safe-bottom) + 16px);-webkit-overflow-scrolling:touch}
 .screen>div{display:none}
 .screen>div.active{display:block}
@@ -115,7 +115,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 /* ── TOPBAR ── */
 .topbar{padding:52px 20px 14px;background:var(--bg2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 .topbar-row{display:flex;align-items:center;justify-content:space-between}
-.topbar h1{font-size:22px;font-weight:800;color:#191C1D;letter-spacing:-.3px}
+.topbar h1{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.3px}
 .topbar .sub{font-size:13px;color:var(--text3);margin-top:2px}
 
 /* ── TAB BAR ── */
@@ -130,11 +130,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .fab:active{transform:scale(.94)}
 
 /* ── CARDS ── */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(25,28,29,.06),0 0 0 0 transparent}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(25,28,29,.04)}
 .px{padding-left:16px;padding-right:16px}
 .sect{margin-top:18px}
 .sect-title{font-size:11px;color:#9AA5A0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding:0 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;padding-right:16px}
-.sect-link{font-size:12px;color:#196C43;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600}
+.sect-link{font-size:12px;color:var(--green);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600}
 
 /* ── METRICS ── */
 .metrics-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 16px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;min-height:80px}
@@ -169,11 +169,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .txi:active{background:var(--bg3)}
 .tx-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .tx-info{flex:1;min-width:0}
-.tx-nm{font-size:14px;font-weight:700;color:#191C1D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-nm{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-mt{font-size:12px;color:var(--text3);margin-top:1px}
 .tx-right{text-align:right;flex-shrink:0}
 .tx-amt{font-size:15px;font-weight:600}
-.tx-amt.inc{color:#196C43;font-weight:700}.tx-amt.exp{color:#AD3034;font-weight:700}
+.tx-amt.inc{color:var(--green);font-weight:700}.tx-amt.exp{color:var(--red);font-weight:700}
 .tx-cv{font-size:11px;color:var(--text3);margin-top:1px}
 .tx-tag{font-size:9px;color:var(--purple);margin-top:1px;font-weight:600}
 
@@ -232,7 +232,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
 .sheet{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-radius:24px 24px 0 0;padding:0 0 calc(var(--safe-bottom)+8px);z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);max-height:92dvh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.1)}
 .sheet-overlay.open .sheet{transform:translateY(0);transition:transform .3s cubic-bezier(.33,1,.68,1)}
 .sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
-.sheet-title{font-size:18px;font-weight:700;padding:14px 20px 4px;color:var(--text)}
+.sheet-title{font-size:18px;font-weight:700;padding:14px 20px 4px;color:var(--text);background:var(--bg2)}
 .sheet-body{padding:8px 20px 16px}
 .fg{margin-bottom:14px}
 .flbl{font-size:11px;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;display:block;font-weight:500}
@@ -797,59 +797,32 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
         </div>
       </div>
 
-      <!-- Hero Balance Total -->
-      <div style="margin:16px 16px 0">
-        <div style="background:var(--green);border-radius:16px;padding:22px;position:relative;overflow:hidden">
-          <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07);top:-40px;right:-40px"></div>
-          <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Balance Total Estimado</div>
-          <div id="cajasBalanceTotal" style="font-size:34px;font-weight:800;color:white;letter-spacing:-1px;line-height:1">$0</div>
-          <div id="cajasTendencia" style="margin-top:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px">
-            <span class="ms ms-sm" style="color:white;font-size:14px">trending_up</span>
-            <span style="font-size:12px;font-weight:700;color:white">En pesos</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Transferir CTA -->
-      <div style="margin:12px 16px 0">
-        <button onclick="openSheet('transfSheet')" style="width:100%;background:var(--green-dim);color:white;border:none;border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">
-          <div>
-            <div style="font-size:15px;font-weight:800;text-align:left">Transferir Fondos</div>
-            <div style="font-size:12px;opacity:.8;margin-top:2px">Mueve dinero entre tus cuentas</div>
-          </div>
-          <div style="width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center">
-            <span class="ms" style="color:white">swap_horiz</span>
-          </div>
-        </button>
-      </div>
-
       <!-- Cuentas -->
-      <div class="sect">
-        <div class="sect-title">Cuentas y Efectivo <span class="sect-link" onclick="openSheet('importSheet')"><span class="ms ms-sm" style="vertical-align:middle">upload</span> Importar</span></div>
+      <div class="sect" style="margin-top:16px">
+        <div class="sect-title">Mis cuentas <span class="sect-link" onclick="openSheet('importSheet')"><span class="ms ms-sm" style="vertical-align:middle">upload</span> Importar</span></div>
         <div style="margin:0 16px;display:flex;flex-direction:column;gap:10px" id="cajasList"></div>
+      </div>
+
+      <!-- Transferir CTA — debajo de las cuentas -->
+      <div style="margin:12px 16px 0">
+        <button onclick="openSheet('transfSheet')" style="width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 2px 8px rgba(25,28,29,.06)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:40px;height:40px;background:var(--green-bg);border-radius:10px;display:flex;align-items:center;justify-content:center">
+              <span class="ms" style="color:var(--green)">swap_horiz</span>
+            </div>
+            <div style="text-align:left">
+              <div style="font-size:14px;font-weight:700">Transferir entre cuentas</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px">Mové plata de una cuenta a otra</div>
+            </div>
+          </div>
+          <span class="ms ms-sm" style="color:var(--text3)">chevron_right</span>
+        </button>
       </div>
 
       <!-- Transferencias recientes -->
       <div class="sect">
         <div class="sect-title">Transferencias recientes</div>
         <div class="card" style="margin:0 16px;padding:0;overflow:hidden"><div id="transfList"></div></div>
-      </div>
-
-      <!-- Análisis / Presupuesto shortcut -->
-      <div class="sect">
-        <div class="sect-title">Análisis</div>
-        <div style="margin:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div onclick="goTab('s-presupuesto')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)">
-            <span class="ms" style="color:var(--green);font-size:28px">trending_down</span>
-            <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:8px">Mayor gasto</div>
-            <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:3px" id="mayorGastoLabel">—</div>
-          </div>
-          <div onclick="goTab('s-presupuesto')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;box-shadow:0 4px 20px -2px rgba(25,28,29,.06)">
-            <span class="ms" style="color:var(--amber);font-size:28px">donut_large</span>
-            <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:8px">Presupuesto</div>
-            <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:3px" id="presupuestoLabel">Ver detalle</div>
-          </div>
-        </div>
       </div>
 
     </div>
@@ -2641,19 +2614,8 @@ function cajaTypeIcon(c){
 }
 
 function renderCajas(){
-  // update balance total - recalculate all
-  const totalARS = cajasCache.reduce((s,c)=>{
-    const saldo = calcSaldoCaja(c);
-    return s + (c.moneda==='USD' ? Math.max(0,saldo)*cotiz : Math.max(0,saldo));
-  }, 0) + cajasCache.reduce((s,c)=>{
-    // also count negative balances
-    const saldo = calcSaldoCaja(c);
-    return s + (saldo < 0 ? (c.moneda==='USD' ? saldo*cotiz : saldo) : 0);
-  }, 0);
-  const elBal = document.getElementById('cajasBalanceTotal');
-  if(elBal) elBal.textContent = fmt(totalARS);
   const elSub = document.getElementById('cajasSubtitle');
-  if(elSub) elSub.textContent = cajasCache.length + ' medio' + (cajasCache.length!==1?'s':'') + ' de pago activo' + (cajasCache.length!==1?'s':'');
+  if(elSub) elSub.textContent = cajasCache.length + ' cuenta' + (cajasCache.length!==1?'s':'') + ' activa' + (cajasCache.length!==1?'s':'');
 
   // cajas list - Stitch style
   document.getElementById('cajasList').innerHTML = cajasCache.map(c=>{
@@ -2680,17 +2642,6 @@ function renderCajas(){
       </div>
     </div>`;
   }).join('') || '<div class="empty">Sin cajas cargadas</div>';
-
-  // mayor gasto analysis
-  const expTxs = txsCache.filter(t=>t.tipo==='expense');
-  const byCat = {};
-  expTxs.forEach(t => byCat[t.categoria_id] = (byCat[t.categoria_id]||0) + t.monto_ars);
-  const topCat = Object.entries(byCat).sort((a,b)=>b[1]-a[1])[0];
-  const mgEl = document.getElementById('mayorGastoLabel');
-  if(mgEl) mgEl.textContent = topCat ? gc(topCat[0]).nombre : '—';
-  const presEl = document.getElementById('presupuestoLabel');
-  const nPres = presCache.filter(p=>p.mes===curMonth+1&&p.anio===curYear).length;
-  if(presEl) presEl.textContent = nPres > 0 ? nPres + ' categoría' + (nPres!==1?'s':'') : 'Sin configurar';
 
   // transferencias list
   document.getElementById('transfList').innerHTML = transfCache.length ? transfCache.slice(0,8).map(t=>{
