@@ -957,13 +957,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
             </div>
             <span class="ms ms-sm" style="color:var(--text3)">chevron_right</span>
           </div>
-          <div class="set-row" onclick="openSheet('fixSheet')" style="cursor:pointer;border-bottom:none">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:34px;height:34px;border-radius:9px;background:#F3F4F5;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="ms ms-sm" style="color:var(--text2)">update</span></div>
-              <span class="set-label">Gastos Recurrentes</span>
-            </div>
-            <span class="ms ms-sm" style="color:var(--text3)">chevron_right</span>
-          </div>
+
         </div>
       </div>
 
@@ -989,15 +983,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div id="seccionCategorias" style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:800;padding:0 16px;margin:20px 0 8px">Categorías</div>
       <div style="margin:0 16px">
         <div class="cat-grid" id="catGrid"></div>
-        <button class="bnewcat" onclick="openSheet('catSheet')"><span class="ms ms-sm">add</span> Nueva categoría</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="bnewcat" onclick="openSheet('catSheet')"><span class="ms ms-sm">add</span> Nueva</button>
+          <button class="bnewcat" onclick="openSheet('catBulkSheet')" style="border-color:var(--green);color:var(--green)"><span class="ms ms-sm">playlist_add</span> Varias</button>
+        </div>
       </div>
 
-      <!-- Gastos fijos -->
-      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:800;padding:0 16px;margin:20px 0 8px">Gastos Recurrentes</div>
-      <div class="card" style="margin:0 16px;padding:0;overflow:hidden"><div id="fixList"></div></div>
-      <div style="margin:12px 16px 0">
-        <button onclick="openSheet('fixSheet')" style="width:100%;background:var(--bg3);border:1px dashed var(--border2);border-radius:var(--rs);padding:13px;font-size:14px;color:var(--text2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px"><span class="ms ms-sm">add</span> Nuevo gasto recurrente</button>
-      </div>
+
 
       <!-- Footer -->
       <div style="text-align:center;padding:32px 20px 16px">
@@ -1167,22 +1159,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('catSheet')">Cancelar</button><button class="bsub" onclick="saveCat()">Guardar</button></div></div>
 </div>
-<!-- FIX -->
-<div class="sheet-overlay" id="fixSheet" onclick="closeSheetOut(event,'fixSheet')">
-  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="fixTitle">Nuevo gasto fijo</div>
-  <div class="sheet-body">
-    <div class="fg"><label class="flbl">Nombre</label><input class="finp" id="fixnm" placeholder="Ej: Alquiler, Netflix..."></div>
-    <div class="frow">
-      <div class="fg"><label class="flbl">Monto</label><input class="finp" id="fixamt" type="number" inputmode="decimal" placeholder="0"></div>
-      <div class="fg"><label class="flbl">Moneda</label><select class="fsel" id="fixcur"><option value="ARS">$ Pesos</option><option value="USD">USD</option></select></div>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="flbl">Categoría</label><select class="fsel" id="fixcat"></select></div>
-      <div class="fg"><label class="flbl">Día del mes</label><input class="finp" id="fixday" type="number" inputmode="numeric" placeholder="1–31"></div>
-    </div>
-  </div>
-  <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('fixSheet')">Cancelar</button><button class="bsub" onclick="saveFix()">Guardar</button></div></div>
-</div>
+
 
 <!-- EDITAR TX -->
 <div class="sheet-overlay" id="editTxSheet" onclick="closeSheetOut(event,'editTxSheet')">
@@ -1592,7 +1569,7 @@ async function startApp(){
   document.getElementById('appMain').style.display = 'flex';
 
   // cargar todos los datos
-  await Promise.all([loadCats(), loadCajas(), loadTransferencias(), loadGrupos(), loadTxs(), loadHgGastos(), loadHgPagos(), loadHgPres(), loadPres(), loadFix(), loadFixPagos()]);
+  await Promise.all([loadCats(), loadCajas(), loadTransferencias(), loadGrupos(), loadTxs(), loadHgGastos(), loadHgPagos(), loadHgPres(), loadPres(), loadFix()]);
 
   // Force current month to today's month/year in case it drifted
   const now = new Date();
@@ -1657,10 +1634,7 @@ async function loadPres(){
   const { data } = await sb.from('presupuesto_personal').select('*').eq('user_id', user.id);
   presCache = data || [];
 }
-async function loadFix(){
-  const { data } = await sb.from('gastos_fijos').select('*').eq('user_id', user.id).eq('activo', true);
-  fixCache = data || [];
-}
+async function loadFix(){ fixCache = []; }
 
 // ══ RENDER ══
 function renderAll(){
@@ -1995,17 +1969,7 @@ function renderAjustes(){
   if(thumb) thumb.style.transform = darkMode ? 'translateX(18px)' : 'translateX(0)';
   if(track) track.style.background = darkMode ? 'var(--green)' : 'var(--border2)';
 
-  document.getElementById('fixList').innerHTML = fixCache.length ? fixCache.map(f=>{
-    const cat=gc(f.categoria_id);
-    const ars=f.moneda==='USD'?f.monto*cotiz:f.monto;
-    const isPagado = fixPagosCache[f.id]||false;
-    return `<div class="fix-item">
-      <span style="font-size:18px">${cat.emoji}</span>
-      <div style="flex:1"><div style="font-size:14px;font-weight:500">${f.nombre}</div><div style="font-size:12px;color:var(--text3)">Día ${f.dia_del_mes}${f.moneda==='USD'?' · USD '+f.monto:''}</div></div>
-      <div style="font-size:14px;font-weight:600;margin-right:8px">${fmt(ars)}</div>
-      <button onclick="toggleFixPago('${f.id}')" style="width:28px;height:28px;border-radius:50%;border:2px solid ${isPagado?'var(--green)':'var(--border2)'};background:${isPagado?'var(--green)':'transparent'};cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${isPagado?'✓':''}</button>
-    </div>`;
-  }).join('') : '<div class="empty" style="padding:20px">Sin gastos fijos cargados</div>';
+
 }
 
 function updateAjustesUI(){
@@ -2041,8 +2005,6 @@ function chMon(d){
   curMonth += d;
   if(curMonth<0){curMonth=11;curYear--}
   if(curMonth>11){curMonth=0;curYear++}
-  // reload fix pagos for new month
-  loadFixPagos().then(()=>{});
   renderAll();
   // if in pres edit mode, refresh the bulk form
   if(presMode === 'edicion') renderPresBulkEdicion();
@@ -2128,13 +2090,15 @@ function openSheet(id){
     document.getElementById('grupoCtx').value='';
     document.getElementById('grupoParticipantes').value='';
   }
-  if(id==='fixSheet'){
-    popSel('fixcat', cats.filter(c=>c.tipo==='both'||c.tipo==='expense'));
-    document.getElementById('fixnm').value=''; document.getElementById('fixamt').value=''; document.getElementById('fixday').value='';
-  }
+
   if(id==='catSheet'){
     if(!editCatId){ document.getElementById('cname').value=''; selEmoji='📦'; selColor='#22C55E'; selCType='both'; }
     buildEP(); buildCP(); updCTChips();
+  }
+  if(id==='catBulkSheet'){
+    document.getElementById('catBulkInput').value = '';
+    catBulkTipo = 'both';
+    setCatBulkTipo('both');
   }
   document.getElementById(id).classList.add('open');
 }
@@ -2543,6 +2507,93 @@ function buildCP(){ document.getElementById('cpicker').innerHTML=COLORS.map(c=>`
 function selC(c){ selColor=c; document.querySelectorAll('.copt').forEach(el=>el.classList.toggle('sel',el.style.background===c||el.style.backgroundColor===c)); }
 function setCT(t){ selCType=t; updCTChips(); }
 function updCTChips(){ const m={both:'sb',income:'si',expense:'se'}; ['both','income','expense'].forEach(t=>document.getElementById('ch-'+t).className='tchip'+(t===selCType?' '+m[t]:'')); }
+// ══ BULK CATEGORÍAS ══
+let catBulkTipo = 'both';
+
+function setCatBulkTipo(t){
+  catBulkTipo = t;
+  const map = {both:'sb', income:'si', expense:'se'};
+  ['both','income','expense'].forEach(x => {
+    const el = document.getElementById('cbulk-' + x);
+    if(el) el.className = 'tchip' + (x === t ? ' ' + map[x] : '');
+  });
+}
+
+// Auto-assign emoji based on category name
+function autoEmoji(nombre){
+  const n = nombre.toLowerCase();
+  const map = [
+    [['comida','restaurant','almuerzo','cena','desayuno','super','mercado','cocina'],'🍔'],
+    [['transporte','auto','nafta','combustible','estacion','colectivo','uber','taxi','peaje'],'🚗'],
+    [['entretenimiento','cine','teatro','concierto','evento','juego','serie','netflix','spotify'],'🎬'],
+    [['salud','medico','farmacia','medicamento','doctor','consulta','clinica'],'💊'],
+    [['servicio','luz','agua','gas','internet','telefono','movil','linea'],'⚡'],
+    [['ropa','indumentaria','calzado','zapatilla','vestimenta'],'👕'],
+    [['educacion','libro','curso','escuela','facultad','universidad','capacitacion'],'📚'],
+    [['sueldo','salario','ingreso','cobro'],'💼'],
+    [['freelance','honorario','proyecto','cliente'],'💻'],
+    [['gimnasio','deporte','actividad','recreacion','recreativa','fitness'],'🏋️'],
+    [['mascota','veterinario','perro','gato'],'🐾'],
+    [['viaje','vacaciones','hotel','vuelo','turismo'],'✈️'],
+    [['hogar','alquiler','expensa','mantenimiento'],'🏠'],
+    [['ahorro','inversion','plazo','fijo'],'💰'],
+    [['regalo','cumple','presente'],'🎁'],
+  ];
+  for(const [keywords, emoji] of map){
+    if(keywords.some(k => n.includes(k))) return emoji;
+  }
+  return '📦';
+}
+
+function autoColor(index){
+  const colors = ['#22C55E','#3B82F6','#8B5CF6','#F87171','#F59E0B','#F97316',
+    '#6EE7B7','#FB923C','#38BDF8','#E879F9','#A3E635','#FBBF24','#34D399','#60A5FA'];
+  return colors[index % colors.length];
+}
+
+async function saveCatBulk(){
+  const raw = document.getElementById('catBulkInput').value.trim();
+  if(!raw) return;
+
+  const nombres = raw.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 0).filter((l,i,arr) => arr.indexOf(l) === i);
+
+  if(!nombres.length) return;
+
+  const btn = document.getElementById('catBulkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creando...';
+
+  // Get current max index to assign colors sequentially
+  const startIdx = cats.length;
+
+  const rows = nombres.map((nombre, i) => ({
+    user_id: user.id,
+    nombre,
+    emoji: autoEmoji(nombre),
+    color: autoColor(startIdx + i),
+    tipo: catBulkTipo
+  }));
+
+  const { data: created, error } = await sb.from('categorias').insert(rows).select();
+
+  btn.disabled = false;
+  btn.textContent = 'Crear categorías';
+
+  if(error){
+    toast('Error al crear categorías');
+    console.error(error);
+    return;
+  }
+
+  cats = [...cats, ...(created || [])];
+  closeSheet('catBulkSheet');
+  document.getElementById('catBulkInput').value = '';
+  catBulkTipo = 'both';
+  setCatBulkTipo('both');
+  renderAjustes();
+  toast(`${nombres.length} categoría${nombres.length !== 1 ? 's' : ''} creada${nombres.length !== 1 ? 's' : ''} ✓`);
+}
+
 async function saveCat(){
   const nombre=document.getElementById('cname').value.trim();
   if(!nombre) return;
@@ -3239,40 +3290,7 @@ async function deleteCaja(){
   toast('Caja eliminada');
 }
 
-// ══ GASTOS FIJOS CON ESTADO POR MES ══
-let fixPagosCache = {};
 
-async function loadFixPagos(){
-  const { data } = await sb.from('gastos_fijos_pagos').select('*')
-    .eq('user_id', user.id).eq('mes', curMonth+1).eq('anio', curYear);
-  fixPagosCache = {};
-  (data||[]).forEach(p => fixPagosCache[p.gasto_fijo_id] = p.pagado);
-}
-
-async function toggleFixPago(fixId){
-  const isPagado = fixPagosCache[fixId] || false;
-  await sb.from('gastos_fijos_pagos').upsert({
-    user_id:user.id, gasto_fijo_id:fixId,
-    mes:curMonth+1, anio:curYear, pagado:!isPagado
-  }, {onConflict:'gasto_fijo_id,mes,anio'});
-  await loadFixPagos();
-  renderAjustes();
-}
-
-// ══ GASTOS FIJOS ══
-async function saveFix(){
-  const nombre=document.getElementById('fixnm').value.trim();
-  const monto=parseFloat(document.getElementById('fixamt').value);
-  const moneda=document.getElementById('fixcur').value;
-  const catId=document.getElementById('fixcat').value;
-  const dia=parseInt(document.getElementById('fixday').value);
-  if(!nombre||!monto||!dia) return;
-  await sb.from('gastos_fijos').insert({ user_id:user.id, nombre, monto, moneda, categoria_id:catId||null, dia_del_mes:dia, activo:true });
-  closeSheet('fixSheet');
-  await loadFix();
-  renderAjustes();
-  toast('Gasto fijo guardado ✓');
-}
 
 // ══ TEMA ══
 let darkMode = localStorage.getItem('theme') === 'dark' ||
