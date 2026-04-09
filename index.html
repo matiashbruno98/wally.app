@@ -1437,6 +1437,8 @@ async function doLogout(){
 
 // ══ HOGAR VINCULACIÓN ══
 function genCodigo(userId){
+  // Use stored codigo from perfil if available, else generate from UUID
+  if(perfil?.codigo) return perfil.codigo;
   return userId.replace(/-/g,'').substring(0,6).toUpperCase();
 }
 
@@ -1467,36 +1469,26 @@ async function vincularHogar(){
   const btn = document.getElementById('vinBtn');
   btn.disabled = true; btn.textContent = 'Buscando...';
 
-  // Buscar en perfiles por codigo_vinculacion (campo dedicado)
-  // o por prefijo del UUID como fallback
   let match = null;
 
-  // Intento 1: buscar por campo codigo_vinculacion si existe
-  const { data: byCode } = await sb.from('perfiles')
-    .select('id, hogar_id, nombre')
-    .eq('codigo_vinculacion', codigo)
+  // Search directly by codigo field
+  const { data: byCode, error: searchErr } = await sb
+    .from('perfiles')
+    .select('id, hogar_id, nombre, codigo')
+    .eq('codigo', codigo)
     .neq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  if(byCode) {
-    match = byCode;
-  } else {
-    // Intento 2: buscar todos y filtrar por UUID prefix (puede fallar con RLS)
-    const { data: todos, error: rErr } = await sb.from('perfiles')
-      .select('id, hogar_id, nombre')
-      .neq('id', user.id);
-
-    if(rErr){
-      // RLS bloqueó la consulta - necesitamos el código exacto
-      if(vinErrEl){
-        vinErrEl.innerHTML = 'No se pudo buscar el código.<br><small>Asegurate de que tu pareja esté registrada en Wally y que el código sea exactamente el que aparece en su pantalla.</small>';
-        vinErrEl.style.display='block';
-      }
-      btn.disabled=false; btn.textContent='Vincular hogar'; return;
+  if(searchErr){
+    console.error('Search error:', searchErr);
+    if(vinErrEl){
+      vinErrEl.textContent = 'Error al buscar. Intentá de nuevo.';
+      vinErrEl.style.display = 'block';
     }
-
-    match = todos?.find(p => genCodigo(p.id) === codigo);
+    btn.disabled=false; btn.textContent='Vincular hogar'; return;
   }
+
+  match = byCode;
 
   if(!match){
     if(vinErrEl){
@@ -1598,8 +1590,9 @@ async function loadPerfil(){
   if(error || !data){
     // Try to create perfil if it doesn't exist (in case DB trigger is missing)
     const nombre = user.user_metadata?.nombre || user.email?.split('@')[0] || 'Usuario';
+    const codigoNuevo = genCodigo(user.id);
     const { data: created, error: ce } = await sb.from('perfiles')
-      .insert({ id: user.id, nombre, cotizacion_usd: 1350 })
+      .insert({ id: user.id, nombre, cotizacion_usd: 1350, codigo: codigoNuevo })
       .select().single();
     if(ce || !created){ await doLogout(); return; }
     perfil = created;
@@ -1608,6 +1601,12 @@ async function loadPerfil(){
   }
   cotiz = perfil.cotizacion_usd || 1350;
   hogarId = perfil.hogar_id;
+  // Ensure codigo is set in perfiles
+  if(!perfil.codigo){
+    const codigo = user.id.replace(/-/g,'').substring(0,6).toUpperCase();
+    await sb.from('perfiles').update({ codigo }).eq('id', user.id);
+    perfil.codigo = codigo;
+  }
   startApp();
 }
 
