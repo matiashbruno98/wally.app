@@ -1276,6 +1276,32 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('grupoGastoSheet')">Cancelar</button><button class="bsub" onclick="saveGrupoGasto()">Agregar</button></div></div>
 </div>
+<!-- CAT BULK -->
+<div class="sheet-overlay" id="catBulkSheet" onclick="closeSheetOut(event,'catBulkSheet')">
+  <div class="sheet"><div class="sheet-handle"></div>
+  <div class="sheet-title">Agregar categorías</div>
+  <div class="sheet-body">
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.6">Escribí una categoría por línea. Se crean todas juntas con emoji y color automático.</p>
+    <div class="fg">
+      <label class="flbl">Categorías (una por línea)</label>
+      <textarea class="finp" id="catBulkInput" rows="8" placeholder="Actividades Recreativas&#10;Gimnasio&#10;Línea Móvil&#10;Nafta&#10;Mascotas" style="resize:none;line-height:1.8;font-size:15px"></textarea>
+    </div>
+    <div class="fg">
+      <label class="flbl">Tipo</label>
+      <div class="tchips">
+        <div class="tchip sb" id="cbulk-both" onclick="setCatBulkTipo('both')">Ambos</div>
+        <div class="tchip" id="cbulk-income" onclick="setCatBulkTipo('income')">Ingresos</div>
+        <div class="tchip" id="cbulk-expense" onclick="setCatBulkTipo('expense')">Egresos</div>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="bcanc" onclick="closeSheet('catBulkSheet')">Cancelar</button>
+    <button class="bsub" id="catBulkBtn" onclick="saveCatBulk()">Crear categorías</button>
+  </div>
+  </div>
+</div>
+
 
 <script>
 // ══ SUPABASE ══
