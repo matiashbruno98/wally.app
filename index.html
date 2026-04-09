@@ -1155,7 +1155,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div class="fg"><label class="flbl">Fecha</label><input class="finp" id="efdate" type="date"></div>
     </div>
     <div style="margin-top:4px">
-      <button onclick="deleteTx()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Eliminar transacción</button>
+      <button id="deleteTxBtn" onclick="deleteTx()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s">Eliminar transacción</button>
     </div>
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('editTxSheet')">Cancelar</button><button class="bsub" onclick="saveEditTx()">Guardar cambios</button></div></div>
@@ -1172,7 +1172,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
     </div>
     <div class="fg"><label class="flbl">Saldo inicial</label><input class="finp" id="editCajaSaldo" type="number" inputmode="decimal"></div>
     <div style="margin-top:4px">
-      <button onclick="deleteCaja()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Eliminar caja</button>
+      <button id="deleteCajaBtn" onclick="deleteCaja()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s">Eliminar caja</button>
     </div>
   </div>
   <div class="sheet-actions"><button class="bcanc" onclick="closeSheet('editCajaSheet')">Cancelar</button><button class="bsub" onclick="saveEditCaja()">Guardar</button></div></div>
@@ -1291,7 +1291,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Plus J
       <div class="fg"><label class="flbl">Fecha</label><input class="finp" id="etransfFecha" type="date"></div>
     </div>
     <div style="margin-top:4px">
-      <button onclick="deleteTransf()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Eliminar transferencia</button>
+      <button id="deleteTransfBtn" onclick="deleteTransf()" style="width:100%;background:var(--red-bg);border:1px solid #FECACA;color:var(--red);padding:12px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s">Eliminar transferencia</button>
     </div>
   </div>
   <div class="sheet-actions">
@@ -2979,7 +2979,23 @@ async function saveEditTransf(){
 
 async function deleteTransf(){
   if(!editingTransfId) return;
-  try { await showConfirm('¿Eliminar transferencia?', 'Se borrará permanentemente.'); } catch{ return; }
+  const btn = document.getElementById('deleteTransfBtn');
+  if(!btn) return;
+  if(btn.dataset.confirm !== '1'){
+    btn.dataset.confirm = '1';
+    btn.textContent = 'Tocar de nuevo para confirmar';
+    btn.style.background = 'var(--red)';
+    btn.style.color = 'white';
+    setTimeout(() => {
+      if(btn.dataset.confirm === '1'){
+        btn.dataset.confirm = '';
+        btn.textContent = 'Eliminar transferencia';
+        btn.style.background = 'var(--red-bg)';
+        btn.style.color = 'var(--red)';
+      }
+    }, 3000);
+    return;
+  }
   await sb.from('transferencias').delete().eq('id', editingTransfId);
   closeSheet('editTransfSheet');
   await loadTransferencias();
@@ -3280,6 +3296,8 @@ function openEditTx(id){
     if(sel && t.categoria_id) sel.value = t.categoria_id;
   }, 50);
   openSheet('editTxSheet');
+  const dtb = document.getElementById('deleteTxBtn');
+  if(dtb){ dtb.dataset.confirm=''; dtb.textContent='Eliminar transacción'; dtb.style.background='var(--red-bg)'; dtb.style.color='var(--red)'; }
 }
 
 function setEditTT(t){
@@ -3312,7 +3330,23 @@ async function saveEditTx(){
 
 async function deleteTx(){
   if(!editingTxId) return;
-  try { await showConfirm('¿Eliminar transacción?', 'Se borrará permanentemente de tus movimientos.'); } catch{ return; }
+  const btn = document.getElementById('deleteTxBtn');
+  if(!btn) return;
+  if(btn.dataset.confirm !== '1'){
+    btn.dataset.confirm = '1';
+    btn.textContent = 'Tocar de nuevo para confirmar';
+    btn.style.background = 'var(--red)';
+    btn.style.color = 'white';
+    setTimeout(() => {
+      if(btn.dataset.confirm === '1'){
+        btn.dataset.confirm = '';
+        btn.textContent = 'Eliminar transacción';
+        btn.style.background = 'var(--red-bg)';
+        btn.style.color = 'var(--red)';
+      }
+    }, 3000);
+    return;
+  }
   await sb.from('transacciones').delete().eq('id', editingTxId);
   closeSheet('editTxSheet');
   await loadTxs();
@@ -3365,7 +3399,23 @@ async function saveEditCaja(){
 
 async function deleteCaja(){
   if(!editingCajaId) return;
-  try { await showConfirm('¿Eliminar caja?', 'Los movimientos asociados no se eliminarán.'); } catch{ return; }
+  const btn = document.getElementById('deleteCajaBtn');
+  if(!btn) return;
+  if(btn.dataset.confirm !== '1'){
+    btn.dataset.confirm = '1';
+    btn.textContent = 'Tocar de nuevo para confirmar';
+    btn.style.background = 'var(--red)';
+    btn.style.color = 'white';
+    setTimeout(() => {
+      if(btn.dataset.confirm === '1'){
+        btn.dataset.confirm = '';
+        btn.textContent = 'Eliminar caja';
+        btn.style.background = 'var(--red-bg)';
+        btn.style.color = 'var(--red)';
+      }
+    }, 3000);
+    return;
+  }
   await sb.from('cajas').update({activa:false}).eq('id',editingCajaId);
   closeSheet('editCajaSheet');
   await loadCajas();
